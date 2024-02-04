@@ -7,7 +7,9 @@ import { LoadingOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { useAuthorization } from '/src/composables/authorization.ts'
 import { addOrUpdate } from '~/api/common/user.ts'
 import ParamTable from '~/components/param-table/param-table.vue'
-import { headOptions } from '~/pages/system/api-manage/components/param-table-options/header.ts'
+import { requestHeaderOptions } from '~/pages/system/api-manage/components/param-table-options/requestHeaderOptions.ts'
+import { paramOptions } from '~/pages/system/api-manage/components/param-table-options/paramOptions.ts'
+import { responseOptions } from '~/pages/system/api-manage/components/param-table-options/responseOptions.ts'
 
 const emit = defineEmits(['cancel', 'ok'])
 
@@ -38,24 +40,6 @@ function open(record?: any) {
   }
   formData.value = cloneDeep(record) ?? {}
 }
-
-const headerData = ref<Record<string, any>[]>([
-  {
-    headerKey: 'token',
-    headerExampleValue: 'asgjdcgayjhaschsaxca',
-    remark: '备注',
-  },
-  {
-    headerKey: 'cookie',
-    headerExampleValue: 'asgjdcgayjhaschsaxca',
-    remark: '备注',
-  },
-  {
-    headerKey: 'time',
-    headerExampleValue: '2022-01-01',
-    remark: '备注',
-  },
-])
 
 async function handleOk() {
   try {
@@ -145,25 +129,34 @@ function numberRep(value: string | number) {
           :maxlength="200" placeholder="请输入接口描述"
         />
       </a-form-item>
-      <a-form-item name="method" label="请求方法" :rules="[{ required: true, message: '请输入接口名称' }]">
-        <a-select v-model:value="formData.method" placeholder="请选择请求方法">
-          <a-select-option value="GET">
-            GET
-          </a-select-option>
-          <a-select-option value="POST">
-            POST
-          </a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item name="reduceBalance" label="扣除积分数" :rules="[{ required: true, message: '请输入扣除积分数' }]">
-        <a-input-number
-          v-model:value="formData.reduceBalance"
-          class="w-full" placeholder="请输入0-100的数字"
-          :formatter="numberRep" :parser="numberRep" :min="0" :max="100"
-        />
-      </a-form-item>
+      <a-space>
+        <a-form-item name="method" label="请求方法" :rules="[{ required: true, message: '请输入接口名称' }]">
+          <a-select v-model:value="formData.method" placeholder="请选择请求方法">
+            <a-select-option value="GET">
+              GET
+            </a-select-option>
+            <a-select-option value="POST">
+              POST
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item name="reduceBalance" label="扣除积分数" :rules="[{ required: true, message: '请输入扣除积分数' }]">
+          <a-input-number
+            v-model:value="formData.reduceBalance"
+            class="w-full" placeholder="请输入0-100的数字"
+            :formatter="numberRep" :parser="numberRep" :min="0" :max="100"
+          />
+        </a-form-item>
+      </a-space>
+
       <a-form-item name="requestHeader" label="请求头">
-        <ParamTable v-model="headerData" :options="headOptions" />
+        <ParamTable v-model="formData.headerData" :options="requestHeaderOptions" />
+      </a-form-item>
+      <a-form-item name="requestParams" label="请求参数">
+        <ParamTable v-model="formData.requestParams" :options="paramOptions" />
+      </a-form-item>
+      <a-form-item name="responseHeader" label="响应头">
+        <ParamTable v-model="formData.responseHeader" :options="responseOptions" />
       </a-form-item>
     </a-form>
   </a-modal>

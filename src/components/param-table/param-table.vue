@@ -23,7 +23,10 @@ const MODE = {
   EDIT: 'edit',
 }
 
-const tablData = defineModel()
+const tableData = defineModel({
+  type: Array,
+  default: () => [],
+})
 
 const columns = ref([])
 const dataSource = ref([])
@@ -35,7 +38,7 @@ onMounted(() => {
   buildDataSource()
 
   watch(dataSource, () => {
-    tablData.value = [...dataSource.value]
+    tableData.value = [...dataSource.value]
   })
   // 如果是编辑模式，实时改变数据
   if (mode.toLowerCase() === MODE.EDIT) {
@@ -53,7 +56,6 @@ function buildColumns() {
     title: option.title,
     dataIndex: option.dataIndex,
   }))
-  console.log(mode.toLowerCase() === MODE.EDIT, showOperate)
   if (!(mode.toLowerCase() === MODE.EDIT) && showOperate) {
     columns.value.push({
       title: '操作',
@@ -64,7 +66,7 @@ function buildColumns() {
 
 // 根据配置构建数据源
 function buildDataSource() {
-  const data = tablData.value.map((item) => {
+  const data = tableData.value.map((item) => {
     const object = {}
     options.forEach((option) => {
       object[option.dataIndex] = item[option.dataIndex]

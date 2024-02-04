@@ -1,4 +1,4 @@
-export const headOptions = [
+export const requestHeaderOptions = [
   {
     title: '请求头名称',
     dataIndex: 'headerKey',
