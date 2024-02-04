@@ -1,11 +1,11 @@
 export const requestHeaderOptions = [
   {
     title: '请求头名称',
-    dataIndex: 'headerKey',
+    dataIndex: 'name',
   },
   {
     title: '示例值',
-    dataIndex: 'headerExampleValue',
+    dataIndex: 'exampleValue',
   },
   {
     title: '备注',

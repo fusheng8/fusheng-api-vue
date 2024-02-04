@@ -5,11 +5,11 @@ import { cloneDeep } from 'lodash'
 import { computed, defineEmits, defineExpose, ref } from 'vue'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { useAuthorization } from '/src/composables/authorization.ts'
-import { addOrUpdate } from '~/api/common/user.ts'
 import ParamTable from '~/components/param-table/param-table.vue'
 import { requestHeaderOptions } from '~/pages/system/api-manage/components/param-table-options/requestHeaderOptions.ts'
-import { paramOptions } from '~/pages/system/api-manage/components/param-table-options/paramOptions.ts'
-import { responseOptions } from '~/pages/system/api-manage/components/param-table-options/responseOptions.ts'
+import { requestParamOptions } from '~/pages/system/api-manage/components/param-table-options/RequestParamOptions.ts'
+import { responseParamOptions } from '~/pages/system/api-manage/components/param-table-options/responseParamOptions.ts'
+import { saveOrUpdateApiInfo } from '~/api/api.ts'
 
 const emit = defineEmits(['cancel', 'ok'])
 
@@ -45,7 +45,7 @@ async function handleOk() {
   try {
     await formRef.value?.validate()
 
-    await addOrUpdate(formData.value)
+    await saveOrUpdateApiInfo(formData.value)
 
     emit('ok')
     notification?.success({
@@ -117,20 +117,13 @@ function numberRep(value: string | number) {
         </a-upload>
       </a-form-item>
       <a-form-item name="name" label="接口名称" :rules="[{ required: true, message: '请输入接口名称' }]">
-        <a-input v-model:value="formData.name" :maxlength="50" placeholder="请输入用户名" />
+        <a-input v-model:value="formData.name" :maxlength="50" placeholder="请输入接口名称" />
       </a-form-item>
       <a-form-item name="url" label="接口地址" :rules="[{ required: true, message: '请输入接口地址' }]">
         <a-input v-model:value="formData.url" :maxlength="200" placeholder="请输入接口地址" />
       </a-form-item>
-      <a-form-item name="description" label="接口描述">
-        <a-textarea
-          v-model:value="formData.description"
-          show-count auto-size="true" allow-clear
-          :maxlength="200" placeholder="请输入接口描述"
-        />
-      </a-form-item>
       <a-space>
-        <a-form-item name="method" label="请求方法" :rules="[{ required: true, message: '请输入接口名称' }]">
+        <a-form-item name="method" label="请求方法" :rules="[{ required: true, message: '请选择接口方法' }]">
           <a-select v-model:value="formData.method" placeholder="请选择请求方法">
             <a-select-option value="GET">
               GET
@@ -140,23 +133,53 @@ function numberRep(value: string | number) {
             </a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item name="reduceBalance" label="扣除积分数" :rules="[{ required: true, message: '请输入扣除积分数' }]">
-          <a-input-number
-            v-model:value="formData.reduceBalance"
-            class="w-full" placeholder="请输入0-100的数字"
-            :formatter="numberRep" :parser="numberRep" :min="0" :max="100"
-          />
+        <a-form-item name="status" label="接口状态" :rules="[{ required: true, message: '请选择接口状态' }]">
+          <a-select v-model:value="formData.status" placeholder="请选择接口状态">
+            <a-select-option :value="1">
+              开启
+            </a-select-option>
+            <a-select-option :value="0">
+              关闭
+            </a-select-option>
+          </a-select>
         </a-form-item>
       </a-space>
-
+      <a-form-item name="reduceBalance" label="扣除积分数" :rules="[{ required: true, message: '请输入扣除积分数' }]">
+        <a-input-number
+          v-model:value="formData.reduceBalance"
+          class="w-full" placeholder="请输入0-100的数字"
+          :formatter="numberRep" :parser="numberRep" :min="0" :max="100"
+        />
+      </a-form-item>
+      <a-form-item name="description" label="接口描述">
+        <a-textarea
+          v-model:value="formData.description"
+          show-count auto-size="true" allow-clear
+          :maxlength="200" placeholder="请输入接口描述"
+        />
+      </a-form-item>
       <a-form-item name="requestHeader" label="请求头">
         <ParamTable v-model="formData.headerData" :options="requestHeaderOptions" />
       </a-form-item>
       <a-form-item name="requestParams" label="请求参数">
-        <ParamTable v-model="formData.requestParams" :options="paramOptions" />
+        <ParamTable v-model="formData.requestParams" :options="requestParamOptions" />
+      </a-form-item>
+      <a-form-item name="requestExample" label="请求示例">
+        <a-textarea
+          v-model:value="formData.requestExample"
+          allow-clear :rows="8"
+          :maxlength="2000" placeholder="请输入响应示例"
+        />
       </a-form-item>
       <a-form-item name="responseHeader" label="响应头">
-        <ParamTable v-model="formData.responseHeader" :options="responseOptions" />
+        <ParamTable v-model="formData.responseHeader" :options="responseParamOptions" />
+      </a-form-item>
+      <a-form-item name="responseExample" label="响应示例">
+        <a-textarea
+          v-model:value="formData.responseExample"
+          allow-clear :rows="8"
+          :maxlength="2000" placeholder="请输入响应示例"
+        />
       </a-form-item>
     </a-form>
   </a-modal>

@@ -1,11 +1,12 @@
-export const paramOptions = [
+export const requestParamOptions = [
   {
     title: '请求参数',
-    dataIndex: 'headerKey',
+    dataIndex: 'name',
   },
   {
     title: '必填',
-    dataIndex: 'isRequired',
+    dataIndex: 'required'
+    + '',
   },
   {
     title: '类型',
@@ -13,7 +14,7 @@ export const paramOptions = [
   },
   {
     title: '示例值',
-    dataIndex: 'headerExampleValue',
+    dataIndex: 'ExampleValue',
   },
   {
     title: '备注',

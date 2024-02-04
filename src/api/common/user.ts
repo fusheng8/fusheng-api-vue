@@ -16,6 +16,6 @@ export async function deleteUserByIds(params?: any) {
   return useGet(`/user/deleteByIds?ids=${params.join(',')}`)
 }
 
-export async function addOrUpdate(params?: any) {
+export async function addOrUpdateUser(params?: any) {
   return usePost('/user/save', params)
 }

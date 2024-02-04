@@ -5,7 +5,7 @@ import { cloneDeep } from 'lodash'
 import { computed, defineEmits, defineExpose, ref } from 'vue'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { useAuthorization } from '/src/composables/authorization.ts'
-import { addOrUpdate } from '~/api/common/user.ts'
+import { addOrUpdateUser } from '~/api/common/user.ts'
 
 const emit = defineEmits(['cancel', 'ok'])
 
@@ -44,7 +44,7 @@ async function handleOk() {
   try {
     await formRef.value?.validate()
 
-    await addOrUpdate(formData.value)
+    await addOrUpdateUser(formData.value)
 
     emit('ok')
     notification?.success({

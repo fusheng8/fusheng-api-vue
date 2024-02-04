@@ -1,7 +1,7 @@
-export const responseOptions = [
+export const responseParamOptions = [
   {
     title: '响应参数',
-    dataIndex: 'headerKey',
+    dataIndex: 'name',
   },
   {
     title: '类型',
@@ -9,7 +9,7 @@ export const responseOptions = [
   },
   {
     title: '示例值',
-    dataIndex: 'headerExampleValue',
+    dataIndex: 'exampleValue',
   },
   {
     title: '备注',

@@ -33,6 +33,7 @@ const dataSource = ref([])
 const editSource = ref([])
 
 onMounted(() => {
+  console.log('options')
   // 加载配置
   buildColumns()
   buildDataSource()
@@ -52,7 +53,7 @@ onMounted(() => {
 
 // 根据配置构建表格列对象
 function buildColumns() {
-  columns.value = options.map(option => ({
+  columns.value = options?.map(option => ({
     title: option.title,
     dataIndex: option.dataIndex,
   }))
@@ -66,7 +67,7 @@ function buildColumns() {
 
 // 根据配置构建数据源
 function buildDataSource() {
-  const data = tableData.value.map((item) => {
+  const data = tableData.value?.map((item) => {
     const object = {}
     options.forEach((option) => {
       object[option.dataIndex] = item[option.dataIndex]
@@ -79,12 +80,15 @@ function buildDataSource() {
 
 function onSave(index) {
   const editData = editSource.value[index].date
-  if (!editData.headerKey || !editData.headerExampleValue || !editData.remark) {
-    Modal.error({
-      title: '错误',
-      content: '请求名称、示例值、备注不能为空',
-    })
-    return
+  for (const optionsKey in options) {
+    const option = options[optionsKey]
+    if (!editData[option.dataIndex]) {
+      Modal.error({
+        title: '错误',
+        content: `${option.title}不能为空`,
+      })
+      return
+    }
   }
   for (let i = 0; i < dataSource.value.length; i++) {
     if (i === index)
