@@ -165,7 +165,6 @@ function numberRep(value: string | number) {
       <a-form-item name="requestHeader" label="请求头">
         <ParamTable v-model="headerData" :options="headOptions" />
       </a-form-item>
-      {{ headerData }}
     </a-form>
   </a-modal>
 </template>

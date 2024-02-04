@@ -1,67 +1,82 @@
-<script lang="ts" setup>
+<script  setup>
 import { h, onMounted, ref } from 'vue'
 import { CheckOutlined, CloseOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons-vue'
 import { Modal } from 'ant-design-vue'
 
-const props = defineProps({
-  options: Array,
+const { options, mode, showOperate } = defineProps({
+  options: {
+    type: Array,
+    default: () => [],
+  },
+  mode: {
+    type: String,
+    default: 'show',
+  },
+  showOperate: {
+    type: Boolean,
+    default: true,
+  },
 })
 
-const options = ref(props.options)
+const MODE = {
+  SHOW: 'show',
+  EDIT: 'edit',
+}
+
 const tablData = defineModel()
 
 const columns = ref([])
 const dataSource = ref([])
-
-watch(dataSource, (newValue, oldValue) => {
-  // 判断是不是编辑数据变化
-  if (newValue.isEdit !== oldValue.isEdit)
-    return
-
-  if (newValue.editData !== oldValue.editData)
-    return
-  // 更新数据
-  tablData.value = dataSource.value.map((item) => {
-    const object = {}
-    options.value.forEach((option) => {
-      object[option.dataIndex] = item[option.dataIndex]
-    })
-    return object
-  })
-})
+const editSource = ref([])
 
 onMounted(() => {
   // 加载配置
   buildColumns()
   buildDataSource()
+
+  watch(dataSource, () => {
+    tablData.value = [...dataSource.value]
+  })
+  // 如果是编辑模式，实时改变数据
+  if (mode.toLowerCase() === MODE.EDIT) {
+    watch(editSource, (newValue) => {
+      dataSource.value = [...newValue.map((item) => {
+        return item.date
+      })]
+    }, { deep: true })
+  }
 })
 
 // 根据配置构建表格列对象
 function buildColumns() {
-  columns.value = options.value.map(option => ({
+  columns.value = options.map(option => ({
     title: option.title,
     dataIndex: option.dataIndex,
   }))
-  columns.value.push({
-    title: '操作',
-    dataIndex: 'operation',
-  })
+  console.log(mode.toLowerCase() === MODE.EDIT, showOperate)
+  if (!(mode.toLowerCase() === MODE.EDIT) && showOperate) {
+    columns.value.push({
+      title: '操作',
+      dataIndex: 'operation',
+    })
+  }
 }
 
 // 根据配置构建数据源
 function buildDataSource() {
-  dataSource.value = tablData.value.map((item) => {
-    const object: ParamTableDataSourceItem = { isEdit: false, editData: {} }
-    options.value.forEach((option) => {
+  const data = tablData.value.map((item) => {
+    const object = {}
+    options.forEach((option) => {
       object[option.dataIndex] = item[option.dataIndex]
-      object.editData[option.dataIndex] = item[option.dataIndex]
     })
     return object
   })
+  dataSource.value = [...data]
+  editSource.value = [...data.map(item => ({ isEdit: mode.toLowerCase() === MODE.EDIT, isAdd: false, date: { ...item } }))]
 }
 
-function onSave(index: number) {
-  const { editData } = dataSource.value[index]
+function onSave(index) {
+  const editData = editSource.value[index].date
   if (!editData.headerKey || !editData.headerExampleValue || !editData.remark) {
     Modal.error({
       title: '错误',
@@ -84,82 +99,83 @@ function onSave(index: number) {
   }
 
   // 更新数据
-  dataSource.value = dataSource.value.map((item, i) => {
+  dataSource.value = editSource.value.map((item, i) => {
     if (i === index) {
       item.isEdit = false
-      options.value.forEach((option) => {
-        item[option.dataIndex] = item.editData[option.dataIndex]
-      })
+      item.isAdd = false
     }
-    return item
+    return item.date
   })
 }
 
-function onCancelSave(index: number) {
+function onCancelSave(index) {
   // 如果是新增的数据，直接删除
-  for (let i = 0; i < options.value.length; i++) {
-    const option = options.value[i]
+  for (let i = 0; i < options.length; i++) {
+    const option = options[i]
     if (!dataSource.value[index][option.dataIndex]) {
       onDelete(index)
       return
     }
   }
-  dataSource.value[index].isEdit = false
-  options.value.forEach((option) => {
-    dataSource.value[index].editData[option.dataIndex] = dataSource.value[index][option.dataIndex]
+  // 取消编辑
+  editSource.value[index].isEdit = false
+  options.forEach((option) => {
+    // 恢复原始数据
+    editSource.value[index].date[option.dataIndex] = dataSource.value[index][option.dataIndex]
   })
 }
 
-function onDelete(index: number) {
-  const arr = []
-  for (let i = 0; i < dataSource.value.length; i++) {
-    if (i === index)
-      continue
-    arr.push(dataSource.value[i])
-  }
-  dataSource.value = arr
+function onDelete(index) {
+  const date = dataSource.value.filter((item, i) => i !== index)
+  const editDate = editSource.value.filter((item, i) => i !== index)
+
+  dataSource.value = [...date]
+  editSource.value = [...editDate]
 }
-function handleAdd() {
-  const newData: ParamTableDataSourceItem = {
-    headerKey: '',
-    headerExampleValue: '',
-    remark: '',
-    isEdit: true,
-    editData: {
-      headerKey: '',
-      headerExampleValue: '',
-      remark: '',
-    },
+function onAdd() {
+  const object = { }
+  for (let i = 0; i < editSource.value.length; i++) {
+    if (editSource.value[i].isAdd) {
+      Modal.error({
+        title: '错误',
+        content: '请先保存新增的数据',
+      })
+      return
+    }
   }
-  dataSource.value.push(newData)
+
+  options.forEach((option) => {
+    object[option.dataIndex] = ''
+  })
+  dataSource.value = [...dataSource.value, { ...object }]
+  editSource.value = [...editSource.value, { isEdit: true, isAdd: true, date: { ...object } }]
 }
 </script>
 
 <template>
-  {{ dataSource }}
   <a-table
     bordered :data-source="dataSource"
     :columns="columns" size="middle" :pagination="{ hideOnSinglePage: true }"
   >
     <template #bodyCell="{ column, index, record }">
-      <template v-if="record.isEdit">
+      <template v-if="mode.toLowerCase() === MODE.EDIT || editSource[index].isEdit">
         <template v-for="option in options" :key="option">
           <template v-if="column.dataIndex === option.dataIndex">
             <a-form-item-rest>
-              <a-input v-model:value="dataSource[index].editData[option.dataIndex]" />
+              <a-input v-model:value="editSource[index].date[option.dataIndex]" />
             </a-form-item-rest>
           </template>
         </template>
       </template>
       <template v-if="column.dataIndex === 'operation'">
         <a-space>
-          <template v-if="record.isEdit">
+          <template v-if="editSource[index].isEdit">
             <a-button type="primary" shape="circle" style="background-color: #52c41a" :icon="h(CheckOutlined)" @click="onSave(index)" />
             <a-button type="primary" style="background-color: #faad14" shape="circle" :icon="h(CloseOutlined)" @click="onCancelSave(index)" />
           </template>
           <template v-else>
             <a-button
-              type="primary" shape="circle" :icon="h(EditOutlined)" @click="record.isEdit = true"
+              type="primary" shape="circle" :icon="h(EditOutlined)" @click="editSource[index].isEdit = true"
             /><a-button
               type="primary" danger shape="circle" :icon="h(DeleteOutlined)" @click="onDelete(index)"
             />
@@ -168,7 +184,7 @@ function handleAdd() {
       </template>
     </template>
   </a-table>
-  <a-button class="mt-3" type="primary" @click="handleAdd">
+  <a-button class="mt-3" type="primary" @click="onAdd">
     新增
   </a-button>
 </template>
