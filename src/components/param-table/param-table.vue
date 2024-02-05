@@ -163,7 +163,7 @@ function onAdd() {
     bordered :data-source="dataSource"
     :columns="columns" size="middle" :pagination="{ hideOnSinglePage: true }"
   >
-    <template #bodyCell="{ column, index, record }">
+    <template #bodyCell="{ column, index }">
       <template v-if="mode.toLowerCase() === MODE.EDIT || editSource[index].isEdit">
         <template v-for="option in options" :key="option">
           <template v-if="column.dataIndex === option.dataIndex">

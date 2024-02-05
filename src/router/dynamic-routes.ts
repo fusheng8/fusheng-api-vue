@@ -4,6 +4,35 @@ import { AccessEnum } from '~@/utils/constant'
 
 export default [
   {
+    path: '/api-info',
+    redirect: '/api-info/list',
+    name: 'Api',
+    meta: {
+      title: 'API列表',
+      icon: 'DribbbleOutlined',
+      hideChildrenInMenu: true,
+    },
+    children: [
+      {
+        path: '/api-info/list',
+        name: 'ApiList',
+        component: () => import('~/pages/api/api-list/api-list.vue'),
+        meta: {
+          title: 'API列表',
+        },
+      },
+      {
+        path: '/api-info/info',
+        name: 'ApiInfo',
+        component: () => import('~/pages/api/api-info/api-info.vue'),
+        meta: {
+          title: 'API详情',
+        },
+      },
+    ],
+
+  },
+  {
     path: '/system',
     redirect: '/system',
     name: 'System',
@@ -30,7 +59,6 @@ export default [
       },
     ],
   },
-
   {
     path: '/dashboard',
     redirect: '/dashboard/analysis',
