@@ -3391,7 +3391,7 @@ packages:
       '@vueuse/shared': 10.7.2(vue@3.4.15)
       vue-demi: 0.14.6(vue@3.4.15)
     transitivePeerDependencies:
-      - '@vue/composition-api'
+      - '@vue/composition-api-info'
       - vue
 
   /@vueuse/metadata@10.7.2:
@@ -3402,7 +3402,7 @@ packages:
     dependencies:
       vue-demi: 0.14.6(vue@3.4.15)
     transitivePeerDependencies:
-      - '@vue/composition-api'
+      - '@vue/composition-api-info'
       - vue
 
   /@webgpu/types@0.1.40:
@@ -3606,7 +3606,7 @@ packages:
       ant-design-vue: 4.1.2(vue@3.4.15)
       vue: 3.4.15(typescript@5.3.3)
     transitivePeerDependencies:
-      - '@vue/composition-api'
+      - '@vue/composition-api-info'
     dev: true
 
   /anymatch@3.1.3:

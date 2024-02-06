@@ -43,7 +43,7 @@ function onSearch() {
           :offset="[-10, 10]" color="blue"
           :count="item.reduceBalance > 0 ? `${item.reduceBalance}/次` : '免费'"
         >
-          <a-card hoverable class="w-[280px]" @click="router.push({ path: '/api-info/info', query: { apiId: item.id } })">
+          <a-card hoverable class="w-[280px]" @click="router.push({ path: '/api-info/info', query: { id: item.id } })">
             <template #cover>
               <img height="150px" :src="item.avatarUrl">
             </template>

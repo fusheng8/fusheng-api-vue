@@ -16,7 +16,7 @@ export default [
       {
         path: '/api-info/list',
         name: 'ApiList',
-        component: () => import('~/pages/api/api-list/api-list.vue'),
+        component: () => import('~/pages/api-info/api-list/api-list.vue'),
         meta: {
           title: 'API列表',
         },
@@ -24,7 +24,7 @@ export default [
       {
         path: '/api-info/info',
         name: 'ApiInfo',
-        component: () => import('~/pages/api/api-info/api-info.vue'),
+        component: () => import('~/pages/api-info/api-info/api-info.vue'),
         meta: {
           title: 'API详情',
         },
@@ -50,7 +50,7 @@ export default [
         },
       },
       {
-        path: '/system/api',
+        path: '/system/api-info',
         name: 'ApiManage',
         component: () => import('~/pages/system/api-manage/api-manage.vue'),
         meta: {

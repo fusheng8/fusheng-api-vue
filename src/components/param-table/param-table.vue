@@ -1,5 +1,5 @@
 <script  setup>
-import { h, onMounted, ref } from 'vue'
+import { h, ref } from 'vue'
 import { CheckOutlined, CloseOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons-vue'
 import { Modal } from 'ant-design-vue'
 
@@ -17,7 +17,6 @@ const { options, mode, showOperate } = defineProps({
     default: true,
   },
 })
-
 const MODE = {
   SHOW: 'show',
   EDIT: 'edit',
@@ -33,7 +32,6 @@ const dataSource = ref([])
 const editSource = ref([])
 
 onMounted(() => {
-  console.log('options')
   // 加载配置
   buildColumns()
   buildDataSource()

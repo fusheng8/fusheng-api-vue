@@ -6,9 +6,9 @@ import { computed, defineEmits, defineExpose, ref } from 'vue'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { useAuthorization } from '/src/composables/authorization.ts'
 import ParamTable from '~/components/param-table/param-table.vue'
-import { requestHeaderOptions } from '~/pages/system/api-manage/components/param-table-options/requestHeaderOptions.ts'
-import { requestParamOptions } from '~/pages/system/api-manage/components/param-table-options/RequestParamOptions.ts'
-import { responseParamOptions } from '~/pages/system/api-manage/components/param-table-options/responseParamOptions.ts'
+import { requestHeaderOptions } from '~/param-table-options/requestHeaderOptions.ts'
+import { requestParamOptions } from '~/param-table-options/RequestParamOptions.ts'
+import { responseParamOptions } from '~/param-table-options/responseParamOptions.ts'
 import { saveOrUpdateApiInfo } from '~/api/api.ts'
 
 const emit = defineEmits(['cancel', 'ok'])
@@ -34,11 +34,10 @@ const wrapperCol = { span: 24 }
 function open(record?: any) {
   visible.value = true
   isUpdate.value = !!record?.id
-  if (!isUpdate.value) {
+  if (!isUpdate.value)
     formData.value = {}
-    return
-  }
-  formData.value = cloneDeep(record) ?? {}
+  else
+    formData.value = cloneDeep(record) ?? {}
 }
 
 async function handleOk() {
@@ -85,16 +84,16 @@ defineExpose({
 // 整数转换
 function numberRep(value: string | number) {
   if (typeof value === 'string')
-    return !Number.isNaN(Number(value)) ? value.replace(/^(0+)|[^\d]/g, '') : ''
+    return !Number.isNaN(Number(value)) ? value.replace(/[^\d]/g, '') : ''
   else if (typeof value === 'number')
-    return !Number.isNaN(value) ? String(value).replace(/^(0+)|[^\d]/g, '') : ''
+    return !Number.isNaN(value) ? String(value).replace(/[^\d]/g, '') : ''
   else
     return ''
 }
 </script>
 
 <template>
-  <a-modal v-model:open="visible" :width="800" :mask-closable="false" :title="title" @ok="handleOk" @cancel="handleCancel">
+  <a-modal v-model:open="visible" :destroy-on-close="true" :width="800" :mask-closable="false" :title="title" @ok="handleOk" @cancel="handleCancel">
     <a-form ref="formRef" :model="formData" class="w-full" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-form-item name="avatarUrl" label="接口封面">
         <a-upload
@@ -159,7 +158,7 @@ function numberRep(value: string | number) {
         />
       </a-form-item>
       <a-form-item name="requestHeader" label="请求头">
-        <ParamTable v-model="formData.headerData" :options="requestHeaderOptions" />
+        <ParamTable v-model="formData.requestHeader" :options="requestHeaderOptions" />
       </a-form-item>
       <a-form-item name="requestParams" label="请求参数">
         <ParamTable v-model="formData.requestParams" :options="requestParamOptions" />
@@ -168,11 +167,11 @@ function numberRep(value: string | number) {
         <a-textarea
           v-model:value="formData.requestExample"
           allow-clear :rows="8"
-          :maxlength="2000" placeholder="请输入响应示例"
+          :maxlength="2000" placeholder="请输入请求示例"
         />
       </a-form-item>
-      <a-form-item name="responseHeader" label="响应头">
-        <ParamTable v-model="formData.responseHeader" :options="responseParamOptions" />
+      <a-form-item name="responseHeader" label="响应参数">
+        <ParamTable v-model="formData.responseParams" :options="responseParamOptions" />
       </a-form-item>
       <a-form-item name="responseExample" label="响应示例">
         <a-textarea
