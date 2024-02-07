@@ -40,6 +40,7 @@ export const useUserStore = defineStore('user', () => {
     // 获取用户信息
     const { data: userData } = await getUserInfoApi()
     userInfo.value = userData
+    return userData
   }
 
   const logout = async () => {

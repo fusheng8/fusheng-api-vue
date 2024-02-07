@@ -11,6 +11,8 @@ const emit = defineEmits(['cancel', 'ok'])
 const isUpdate = ref(false)
 const avatarLoding = ref(false)
 
+const token = useAuthorization().value
+
 const FILE_UPLOAD_URL = import.meta.env.VITE_APP_FILE_UPLOAD_URL
 
 const visible = ref(false)
@@ -90,7 +92,7 @@ defineExpose({
           list-type="picture-card"
           :show-upload-list="false"
           :action="FILE_UPLOAD_URL"
-          :headers="{ token: useAuthorization().value }"
+          :headers="{ token }"
           :max-count="1"
           @change="onFileStatusChange"
         >
