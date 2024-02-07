@@ -3,7 +3,7 @@ import { h, ref } from 'vue'
 import { CheckOutlined, CloseOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons-vue'
 import { Modal } from 'ant-design-vue'
 
-const { options, mode, showOperate } = defineProps({
+const { options, mode, showOperate, showAdd } = defineProps({
   options: {
     type: Array,
     default: () => [],
@@ -14,13 +14,19 @@ const { options, mode, showOperate } = defineProps({
   },
   showOperate: {
     type: Boolean,
-    default: true,
+    default: false,
+  },
+  showAdd: {
+    type: Boolean,
+    default: false,
   },
 })
 const MODE = {
   SHOW: 'show',
   EDIT: 'edit',
 }
+// 是否是表格数据更新（防止侦听器进入无限递归）
+let isTableDataUpdate = false
 
 const tableData = defineModel({
   type: Array,
@@ -31,13 +37,23 @@ const columns = ref([])
 const dataSource = ref([])
 const editSource = ref([])
 
-onMounted(() => {
-  // 加载配置
+function init() {
   buildColumns()
   buildDataSource()
+}
 
+onMounted(() => {
+  // 加载配置
+  init()
+  watch(tableData, () => {
+    isTableDataUpdate = true
+    init()
+  })
   watch(dataSource, () => {
-    tableData.value = [...dataSource.value]
+    if (isTableDataUpdate)
+      isTableDataUpdate = false
+    else
+      tableData.value = [...dataSource.value]
   })
   // 如果是编辑模式，实时改变数据
   if (mode.toLowerCase() === MODE.EDIT) {
@@ -55,7 +71,7 @@ function buildColumns() {
     title: option.title,
     dataIndex: option.dataIndex,
   }))
-  if (!(mode.toLowerCase() === MODE.EDIT) && showOperate) {
+  if (showOperate) {
     columns.value.push({
       title: '操作',
       dataIndex: 'operation',
@@ -173,14 +189,15 @@ function onAdd() {
       </template>
       <template v-if="column.dataIndex === 'operation'">
         <a-space>
-          <template v-if="editSource[index].isEdit">
+          <template v-if="mode.toLowerCase() !== MODE.EDIT && editSource[index].isEdit">
             <a-button type="primary" shape="circle" style="background-color: #52c41a" :icon="h(CheckOutlined)" @click="onSave(index)" />
             <a-button type="primary" style="background-color: #faad14" shape="circle" :icon="h(CloseOutlined)" @click="onCancelSave(index)" />
           </template>
           <template v-else>
             <a-button
-              type="primary" shape="circle" :icon="h(EditOutlined)" @click="editSource[index].isEdit = true"
-            /><a-button
+              v-if="mode.toLowerCase() !== MODE.EDIT" type="primary" shape="circle" :icon="h(EditOutlined)" @click="editSource[index].isEdit = true"
+            />
+            <a-button
               type="primary" danger shape="circle" :icon="h(DeleteOutlined)" @click="onDelete(index)"
             />
           </template>
@@ -188,7 +205,7 @@ function onAdd() {
       </template>
     </template>
   </a-table>
-  <a-button class="mt-3" type="primary" @click="onAdd">
+  <a-button v-if="showAdd" class="mt-3" type="primary" @click="onAdd">
     新增
   </a-button>
 </template>

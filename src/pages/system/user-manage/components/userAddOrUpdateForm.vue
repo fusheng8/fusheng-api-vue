@@ -4,7 +4,6 @@ import { notification } from 'ant-design-vue'
 import { cloneDeep } from 'lodash'
 import { computed, defineEmits, defineExpose, ref } from 'vue'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons-vue'
-import { useAuthorization } from '/src/composables/authorization.ts'
 import { addOrUpdateUser } from '~/api/common/user.ts'
 
 const emit = defineEmits(['cancel', 'ok'])

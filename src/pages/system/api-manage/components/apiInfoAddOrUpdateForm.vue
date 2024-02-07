@@ -6,9 +6,9 @@ import { computed, defineEmits, defineExpose, ref } from 'vue'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { useAuthorization } from '/src/composables/authorization.ts'
 import ParamTable from '~/components/param-table/param-table.vue'
-import { requestHeaderOptions } from '~/param-table-options/requestHeaderOptions.ts'
-import { requestParamOptions } from '~/param-table-options/RequestParamOptions.ts'
-import { responseParamOptions } from '~/param-table-options/responseParamOptions.ts'
+import { requestHeaderOptions } from '~/param-table-options/requestHeaderOptions.js'
+import { requestParamOptions } from '~/param-table-options/requestParamOptions.js'
+import { responseParamOptions } from '~/param-table-options/responseParamOptions.js'
 import { saveOrUpdateApiInfo } from '~/api/api.ts'
 
 const emit = defineEmits(['cancel', 'ok'])
@@ -158,10 +158,10 @@ function numberRep(value: string | number) {
         />
       </a-form-item>
       <a-form-item name="requestHeader" label="请求头">
-        <ParamTable v-model="formData.requestHeader" :options="requestHeaderOptions" />
+        <ParamTable v-model="formData.requestHeader" :show-operate="true" show-add="true" :options="requestHeaderOptions" />
       </a-form-item>
       <a-form-item name="requestParams" label="请求参数">
-        <ParamTable v-model="formData.requestParams" :options="requestParamOptions" />
+        <ParamTable v-model="formData.requestParams" :show-operate="true" show-add="true" :options="requestParamOptions" />
       </a-form-item>
       <a-form-item name="requestExample" label="请求示例">
         <a-textarea
@@ -171,7 +171,7 @@ function numberRep(value: string | number) {
         />
       </a-form-item>
       <a-form-item name="responseHeader" label="响应参数">
-        <ParamTable v-model="formData.responseParams" :options="responseParamOptions" />
+        <ParamTable v-model="formData.responseParams" :show-operate="true" show-add="true" :options="responseParamOptions" />
       </a-form-item>
       <a-form-item name="responseExample" label="响应示例">
         <a-textarea

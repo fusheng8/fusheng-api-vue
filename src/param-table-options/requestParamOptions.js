@@ -9,12 +9,12 @@ export const requestParamOptions = [
     + '',
   },
   {
-    title: '类型',
+    title: '数据类型',
     dataIndex: 'type',
   },
   {
-    title: '示例值',
-    dataIndex: 'ExampleValue',
+    title: '请求类型',
+    dataIndex: 'requestType',
   },
   {
     title: '备注',
