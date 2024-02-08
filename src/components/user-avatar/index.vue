@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { LogoutOutlined, ProfileOutlined, UserOutlined } from '@ant-design/icons-vue'
+import { LogoutOutlined, UserOutlined } from '@ant-design/icons-vue'
 
 const message = useMessage()
 const userStore = useUserStore()
@@ -43,14 +43,14 @@ async function handleClick({ key }: any) {
             个人中心
           </RouterLink>
         </a-menu-item>
-        <a-menu-item key="1">
-          <template #icon>
-            <ProfileOutlined />
-          </template>
-          <RouterLink to="/account/settings">
-            个人设置
-          </RouterLink>
-        </a-menu-item>
+        <!--        <a-menu-item key="1"> -->
+        <!--          <template #icon> -->
+        <!--            <ProfileOutlined /> -->
+        <!--          </template> -->
+        <!--          <RouterLink to="/account/settings"> -->
+        <!--            个人设置 -->
+        <!--          </RouterLink> -->
+        <!--        </a-menu-item> -->
         <a-menu-divider />
         <a-menu-item key="logout">
           <template #icon>

@@ -26,5 +26,5 @@ export function loginApi(params: LoginParams | LoginMobileParams) {
 }
 
 export function logoutApi() {
-  return useGet('/logout')
+  return useGet('/user/logout')
 }

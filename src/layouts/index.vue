@@ -57,11 +57,11 @@ const layoutProps = computed(() =>
   >
     <template #headerActions>
       <UserAvatar />
-      <SelectLang />
-      <GithubLink />
+      <!--      <SelectLang /> -->
+      <!--      <GithubLink /> -->
       <template v-if="!isMobile">
-        <GiteeLink />
-        <DocLink />
+        <!--        <GiteeLink /> -->
+        <!--        <DocLink /> -->
       </template>
     </template>
     <template #contentPrefix>

@@ -11,7 +11,7 @@ const visitData = ref([])
 </script>
 
 <template>
-  <page-container>
+  <page-container title="">
     <Suspense :fallback="null">
       <IntroduceRow :loading="loading" :visit-data="visitData" />
     </Suspense>

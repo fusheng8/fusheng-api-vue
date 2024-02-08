@@ -46,6 +46,7 @@ export default [
     meta: {
       title: '系统管理',
       icon: 'SettingOutlined',
+      access: 'admin',
     },
     children: [
       {
@@ -54,6 +55,7 @@ export default [
         component: () => import('~/pages/system/user-manage/user-manage.vue'),
         meta: {
           title: '用户管理',
+          access: 'admin',
         },
       },
       {
@@ -62,6 +64,7 @@ export default [
         component: () => import('~/pages/system/api-manage/api-manage.vue'),
         meta: {
           title: '接口管理',
+          access: 'admin',
         },
       },
     ],
