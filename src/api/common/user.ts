@@ -19,3 +19,6 @@ export async function deleteUserByIds(params?: any) {
 export async function addOrUpdateUser(params?: any) {
   return usePost('/user/save', params)
 }
+export async function resetSecretKey() {
+  return useGet('/user/resetSecretKey')
+}
