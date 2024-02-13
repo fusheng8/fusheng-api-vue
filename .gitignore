@@ -35,3 +35,5 @@ docs/.vitepress/cache
 .output
 
 types/components.d.ts
+
+/dist

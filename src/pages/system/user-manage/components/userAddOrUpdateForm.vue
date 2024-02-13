@@ -11,7 +11,7 @@ const emit = defineEmits(['cancel', 'ok'])
 const isUpdate = ref(false)
 const avatarLoding = ref(false)
 
-const token = useAuthorization().value
+const token = useAuthorization().value || ''
 
 const FILE_UPLOAD_URL = import.meta.env.VITE_APP_FILE_UPLOAD_URL
 

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { PlusOutlined } from '@ant-design/icons-vue'
 import CrudTableModal from './components/apiInfoAddOrUpdateForm.vue'
-import type { CrudTableModel } from '~/api/list/crud-table.ts'
 import { useTableQuery } from '~/composables/table-query.ts'
 import { deleteApiInfoByIds, getApiInfoPageList } from '~/api/common/api.ts'
 
@@ -59,10 +58,9 @@ const { state, initQuery, resetQuery, query } = useTableQuery({
 
 const crudTableModal = ref<InstanceType<typeof CrudTableModal>>()
 
-async function handleDelete(record: CrudTableModel[]) {
+async function handleDelete(record: any[]) {
   // 解构出id数组
   const ids = record.map(item => item.id)
-  console.log(typeof ids, ids)
   await deleteApiInfoByIds([...ids])
   await query()
   message.success('删除成功')
@@ -73,7 +71,7 @@ async function handleDelete(record: CrudTableModel[]) {
 function handleAdd() {
   crudTableModal.value?.open({})
 }
-function handleEdit(record: CrudTableModel) {
+function handleEdit(record: any) {
   crudTableModal.value?.open(record)
 }
 </script>
@@ -157,12 +155,12 @@ function handleEdit(record: CrudTableModel) {
 
           <template v-if="scope?.column?.dataIndex === 'action'">
             <div flex gap-2>
-              <a-button type="link" @click="handleEdit(scope?.record as CrudTableModel)">
+              <a-button type="link" @click="handleEdit(scope?.record)">
                 编辑
               </a-button>
               <a-popconfirm
                 title="确定删除该条数据？" ok-text="确定" cancel-text="取消"
-                @confirm="handleDelete([scope?.record as CrudTableModel])"
+                @confirm="handleDelete([scope?.record])"
               >
                 <a-button type="link">
                   删除
