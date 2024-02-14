@@ -25,6 +25,10 @@ const MODE = {
   SHOW: 'show',
   EDIT: 'edit',
 }
+const INPUT_TYPE = {
+  TEXT: 'text',
+  SELECT: 'select',
+}
 // 是否是表格数据更新（防止侦听器进入无限递归）
 let isTableDataUpdate = false
 let isDataSourceUpdate = false
@@ -78,6 +82,8 @@ function buildColumns() {
   columns.value = options?.map(option => ({
     title: option.title,
     dataIndex: option.dataIndex,
+    inputType: option.type,
+    selectList: option.selectList,
   }))
   if (showOperate) {
     columns.value.push({
@@ -97,8 +103,25 @@ function buildDataSource() {
     return object
   })
 
+  // 给编辑数据默认值
+  const editData = [...data.map(item => ({ isEdit: mode.toLowerCase() === MODE.EDIT, isAdd: false, date: { ...item } }))]
+
+  for (const optionsKey in options) {
+    const option = options[optionsKey]
+    if (INPUT_TYPE.TEXT.toLowerCase() === option.type) {
+      editData.forEach((item) => {
+        item.date[option.dataIndex] = item.date[option.dataIndex] || ''
+      })
+    }
+    else if (INPUT_TYPE.TEXT.toLowerCase() === option.type) {
+      editData.forEach((item) => {
+        item.date[option.dataIndex] = item.date[option.dataIndex] || option.selectList[0].value
+      })
+    }
+  }
+
   dataSource.value = [...data]
-  editSource.value = [...data.map(item => ({ isEdit: mode.toLowerCase() === MODE.EDIT, isAdd: false, date: { ...item } }))]
+  editSource.value = editData
 }
 
 function onSave(index) {
@@ -181,7 +204,11 @@ function onAdd() {
   }
 
   options.forEach((option) => {
-    object[option.dataIndex] = ''
+    if (INPUT_TYPE.TEXT.toLowerCase() === option.type)
+      object[option.dataIndex] = ''
+
+    else if (INPUT_TYPE.SELECT.toLowerCase() === option.type)
+      object[option.dataIndex] = option.selectList[0].value || ''
   })
 
   isDataSourceUpdate = true
@@ -195,12 +222,18 @@ function onAdd() {
     bordered :data-source="dataSource"
     :columns="columns" size="middle" :pagination="{ hideOnSinglePage: true }"
   >
-    <template #bodyCell="{ column, index }">
+    <template #bodyCell="{ index, column }">
       <template v-if="mode.toLowerCase() === MODE.EDIT || editSource[index].isEdit">
         <template v-for="option in options" :key="option">
           <template v-if="column.dataIndex === option.dataIndex">
-            <a-form-item-rest>
-              <a-input v-model:value="editSource[index].date[option.dataIndex]" />
+            <a-form-item-rest v-if="column.inputType === INPUT_TYPE.TEXT">
+              <a-input v-model:value="editSource[index].date[option.dataIndex]" placeholder="请输入内容" />
+            </a-form-item-rest>
+            <a-form-item-rest v-else-if="column.inputType === INPUT_TYPE.SELECT">
+              <a-select
+                v-model:value="editSource[index].date[option.dataIndex]"
+                :options="column.selectList"
+              />
             </a-form-item-rest>
           </template>
         </template>
