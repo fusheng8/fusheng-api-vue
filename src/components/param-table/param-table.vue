@@ -27,6 +27,7 @@ const MODE = {
 }
 // 是否是表格数据更新（防止侦听器进入无限递归）
 let isTableDataUpdate = false
+let isDataSourceUpdate = false
 
 const tableData = defineModel({
   type: Array,
@@ -46,14 +47,21 @@ onMounted(() => {
   // 加载配置
   init()
   watch(tableData, () => {
+    if (isDataSourceUpdate) {
+      isDataSourceUpdate = false
+      return
+    }
     isTableDataUpdate = true
     init()
   })
   watch(dataSource, () => {
-    if (isTableDataUpdate)
+    if (isTableDataUpdate) {
       isTableDataUpdate = false
-    else
+    }
+    else {
+      isDataSourceUpdate = true
       tableData.value = [...dataSource.value]
+    }
   })
   // 如果是编辑模式，实时改变数据
   if (mode.toLowerCase() === MODE.EDIT) {
@@ -96,25 +104,28 @@ function onSave(index) {
   const editData = editSource.value[index].date
   for (const optionsKey in options) {
     const option = options[optionsKey]
-    if (!editData[option.dataIndex]) {
+    if (option.isNotNull && !editData[option.dataIndex]) {
       Modal.error({
         title: '错误',
         content: `${option.title}不能为空`,
       })
       return
     }
-  }
-  for (let i = 0; i < dataSource.value.length; i++) {
-    if (i === index)
-      continue
 
-    const item = dataSource.value[i]
-    if (item.headerKey === editData.headerKey) {
-      Modal.error({
-        title: '错误',
-        content: '请求名称不能有重复',
-      })
-      return
+    // 如果是唯一的，判断是否有重复
+    if (option.isOnly) {
+      for (let i = 0; i < dataSource.value.length; i++) {
+        if (i === index)
+          continue
+        const item = dataSource.value[i]
+        if (item[option.dataIndex] === editData[option.dataIndex]) {
+          Modal.error({
+            title: '错误',
+            content: `${option.title}不能有重复`,
+          })
+          return
+        }
+      }
     }
   }
 
