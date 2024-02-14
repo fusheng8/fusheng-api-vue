@@ -96,6 +96,7 @@ function buildDataSource() {
     })
     return object
   })
+
   dataSource.value = [...data]
   editSource.value = [...data.map(item => ({ isEdit: mode.toLowerCase() === MODE.EDIT, isAdd: false, date: { ...item } }))]
 }
@@ -129,6 +130,7 @@ function onSave(index) {
     }
   }
 
+  isDataSourceUpdate = true
   // 更新数据
   dataSource.value = editSource.value.map((item, i) => {
     if (i === index) {
@@ -160,24 +162,29 @@ function onDelete(index) {
   const date = dataSource.value.filter((item, i) => i !== index)
   const editDate = editSource.value.filter((item, i) => i !== index)
 
+  isDataSourceUpdate = true
   dataSource.value = [...date]
   editSource.value = [...editDate]
 }
 function onAdd() {
   const object = { }
-  for (let i = 0; i < editSource.value.length; i++) {
-    if (editSource.value[i].isAdd) {
-      Modal.error({
-        title: '错误',
-        content: '请先保存新增的数据',
-      })
-      return
+  if (mode.toLowerCase() !== MODE.EDIT) {
+    for (let i = 0; i < editSource.value.length; i++) {
+      if (editSource.value[i].isAdd) {
+        Modal.error({
+          title: '错误',
+          content: '请先保存新增的数据',
+        })
+        return
+      }
     }
   }
 
   options.forEach((option) => {
     object[option.dataIndex] = ''
   })
+
+  isDataSourceUpdate = true
   dataSource.value = [...dataSource.value, { ...object }]
   editSource.value = [...editSource.value, { isEdit: true, isAdd: true, date: { ...object } }]
 }
