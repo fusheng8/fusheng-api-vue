@@ -27,7 +27,12 @@ router.beforeEach(async (to, _, next) => {
     if (!userStore.userInfo && !allowList.includes(to.path) && !to.path.startsWith('/redirect')) {
       try {
         // 获取用户信息
-        await userStore.getUserInfo()
+        try {
+          await userStore.getUserInfo()
+        }
+        catch (e) {
+          console.error('获取用户信息失败:', e)
+        }
         // 获取路由菜单的信息
         const currentRoute = await userStore.generateDynamicRoutes()
         router.addRoute(currentRoute)
@@ -35,6 +40,7 @@ router.beforeEach(async (to, _, next) => {
           ...to,
           replace: true,
         })
+
         return
       }
       catch (e) {

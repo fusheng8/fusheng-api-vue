@@ -37,7 +37,7 @@ function sendRequest() {
     url: form.value.url,
     method: form.value.method,
     headers: buildObjectByKeyValue(form.value.requestHeader, 'headerKey', 'headerValue'),
-    data: JSON.parse(form.value.requestParams),
+    data: JSON.parse(form.value.requestParams || '{}'),
   }
 
   customRequest.request(requestConfig).then((res) => {

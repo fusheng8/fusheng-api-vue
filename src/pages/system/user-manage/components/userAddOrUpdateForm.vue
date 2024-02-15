@@ -133,7 +133,6 @@ defineExpose({
           </a-select-option>
         </a-select>
       </a-form-item>
-      {{ formData.roles }}
       <a-form-item name="roles" label="角色">
         <a-select
           v-model:value="formData.roles"

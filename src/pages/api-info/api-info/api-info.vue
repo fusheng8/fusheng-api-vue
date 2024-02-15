@@ -66,10 +66,10 @@ onMounted(async () => {
             <ParamTable v-model="info.responseParams" :options="responseParamOptions" />
           </a-card>
           <a-card title="请求示例">
-            <a-typography-paragraph>{{ info.requestExample }}</a-typography-paragraph>
+            <a-textarea :value="info.requestExample" :bordered="false" :auto-size="true" />
           </a-card>
           <a-card title="响应示例">
-            <a-typography-paragraph>{{ info.responseExample }}</a-typography-paragraph>
+            <a-textarea :value="info.responseExample" :bordered="false" :auto-size="true" />
           </a-card>
         </template>
       </a-card>
