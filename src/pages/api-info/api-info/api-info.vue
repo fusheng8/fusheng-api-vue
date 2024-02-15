@@ -2,7 +2,7 @@
 import { responseParamOptions } from '~/param-table-options/responseParamOptions.js'
 import { requestParamOptions } from '~/param-table-options/requestParamOptions.js'
 import { requestHeaderOptions } from '~/param-table-options/requestHeaderOptions.js'
-import { queryApiInfoById } from '~/api/common/api.ts'
+import { queryApiInfoById } from '~/api/api.ts'
 import ApiDebug from '~/pages/api-info/api-info/components/api-debug.vue'
 
 defineOptions({

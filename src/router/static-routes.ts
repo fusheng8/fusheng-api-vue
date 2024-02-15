@@ -11,6 +11,13 @@ export default [
     },
   },
   {
+    path: '/register',
+    component: () => import('~/pages/common/register.vue'),
+    meta: {
+      title: '注册',
+    },
+  },
+  {
     path: '/401',
     name: 'Error401',
     component: () => import('~/pages/exception/401.vue'),

@@ -2,8 +2,8 @@
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import CrudTableModal from './components/userAddOrUpdateForm.vue'
 import { useTableQuery } from '~/composables/table-query.ts'
-import { deleteUserByIds, getUserPageList } from '~/api/common/user.ts'
-import { getAllRoleList } from '~/api/common/role.ts'
+import { deleteUserByIds, getUserPageList } from '~/api/user.ts'
+import { getAllRoleList } from '~/api/role.ts'
 
 const message = useMessage()
 const roleArr: any = ref([])
@@ -16,7 +16,7 @@ const columns = shallowRef([
     key: 'id',
   },
   {
-    title: '接口名',
+    title: '用户名',
     dataIndex: 'username',
     key: 'username',
   },

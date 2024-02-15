@@ -2,7 +2,7 @@
 import ChartCard from '~/pages/account/center/components/chart-card.vue'
 import Field from '~/pages/account/center/components/field.vue'
 import { useUserStore } from '~/stores/user.ts'
-import { resetSecretKey } from '~/api/common/user.ts'
+import { resetSecretKey } from '~/api/user.ts'
 
 defineProps({
   loading: {
@@ -41,7 +41,7 @@ function resetSK() {
           <a-avatar :src="userInfo.avatar" />
         </template>
         <template #total>
-          <span>{{ userInfo.nickName }}</span>
+          <span>{{ userInfo.useraname }}</span>
         </template>
         <a-button type="link" @click="notification.warning({ message: '暂未开发', duration: 3 })">
           个人信息

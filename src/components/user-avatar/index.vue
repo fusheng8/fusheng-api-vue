@@ -6,7 +6,7 @@ const userStore = useUserStore()
 const multiTabStore = useMultiTab()
 const layoutMenuStore = useLayoutMenu()
 const router = useRouter()
-const { avatar, nickname } = storeToRefs(userStore)
+const { avatar, userInfo } = storeToRefs(userStore)
 async function handleClick({ key }: any) {
   if (key === 'logout') {
     const hide = message.loading('退出登录...', 0)
@@ -31,7 +31,7 @@ async function handleClick({ key }: any) {
   <a-dropdown>
     <span hover="bg-[var(--hover-color)]" flex items-center h-48px px-12px cursor-pointer class="transition-all-300">
       <a-avatar :src="avatar" mr-8px size="small" />
-      <span class="anticon">{{ nickname }}</span>
+      <span class="anticon">{{ userInfo?.username || '' }}</span>
     </span>
     <template #overlay>
       <a-menu @click="handleClick">

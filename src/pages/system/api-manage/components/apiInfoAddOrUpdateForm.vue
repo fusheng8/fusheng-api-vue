@@ -9,7 +9,7 @@ import ParamTable from '~/components/param-table/param-table.vue'
 import { requestHeaderOptions } from '~/param-table-options/requestHeaderOptions'
 import { requestParamOptions } from '~/param-table-options/requestParamOptions'
 import { responseParamOptions } from '~/param-table-options/responseParamOptions'
-import { saveOrUpdateApiInfo } from '~/api/common/api.ts'
+import { saveOrUpdateApiInfo } from '~/api/api.ts'
 
 const emit = defineEmits(['cancel', 'ok'])
 

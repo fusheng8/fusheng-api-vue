@@ -4,7 +4,7 @@ import { notification } from 'ant-design-vue'
 import { cloneDeep } from 'lodash'
 import { computed, defineEmits, defineExpose, ref } from 'vue'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons-vue'
-import { addOrUpdateUser } from '~/api/common/user.ts'
+import { addOrUpdateUser } from '~/api/user.ts'
 
 const emit = defineEmits(['cancel', 'ok'])
 
@@ -111,9 +111,6 @@ defineExpose({
       </a-form-item>
       <a-form-item name="password" label="密码" :rules="[{ required: !isUpdate, message: '请输入密码' }]">
         <a-input-password v-model:value="formData.password" :maxlength="50" placeholder="请输入密码" />
-      </a-form-item>
-      <a-form-item name="nickName" label="昵称">
-        <a-input v-model:value="formData.nickName" :maxlength="50" placeholder="请输入昵称" />
       </a-form-item>
       <a-form-item name="email" label="邮箱">
         <a-input v-model:value="formData.email" :maxlength="50" placeholder="请输入邮箱" />

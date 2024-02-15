@@ -1,11 +1,13 @@
 export interface UserInfo {
   id: number | string
   username: string
-  nickName: string
   avatar: string
   roles: (string | number)[]
 }
 
+export function register(params?: any) {
+  return usePost<UserInfo>('/user/register', params)
+}
 export function getUserInfoApi() {
   return useGet<UserInfo>('/user/info')
 }

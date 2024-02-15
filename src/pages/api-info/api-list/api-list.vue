@@ -1,5 +1,5 @@
 <script setup>
-import { getApiInfoPageList } from '~/api/common/api.ts'
+import { getApiInfoPageList } from '~/api/api.ts'
 
 defineOptions({
   name: 'ApiList',

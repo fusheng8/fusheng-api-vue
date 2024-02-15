@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { AlipayCircleFilled, LockOutlined, MobileOutlined, TaobaoCircleFilled, UserOutlined, WeiboCircleFilled } from '@ant-design/icons-vue'
+import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons-vue'
 import { delayTimer } from '@v-c/utils'
 import { AxiosError } from 'axios'
-import GlobalLayoutFooter from '~/layouts/components/global-footer/index.vue'
-import { loginApi } from '~/api/common/login'
+import { loginApi } from '~/api/login.ts'
 import { getQueryParam } from '~/utils/tools'
-import type { LoginMobileParams, LoginParams } from '~@/api/common/login'
+import type { LoginEmailParams, LoginParams } from '~/api/login.ts'
 import pageBubble from '@/utils/page-bubble'
 
 const message = useMessage()
@@ -17,7 +16,7 @@ const token = useAuthorization()
 const loginModel = reactive({
   username: 'admin',
   password: '123456',
-  mobile: undefined,
+  email: undefined,
   code: undefined,
   type: 'account',
   remember: true,
@@ -42,7 +41,7 @@ const { counter, pause, reset, resume, isActive } = useInterval(1000, {
 async function getCode() {
   codeLoading.value = true
   try {
-    await formRef.value.validate(['mobile'])
+    await formRef.value.validate(['email'])
     setTimeout(() => {
       reset()
       resume()
@@ -59,7 +58,7 @@ async function submit() {
   submitLoading.value = true
   try {
     await formRef.value?.validate()
-    let params: LoginParams | LoginMobileParams
+    let params: LoginParams | LoginEmailParams
 
     if (loginModel.type === 'account') {
       params = {
@@ -69,10 +68,10 @@ async function submit() {
     }
     else {
       params = {
-        mobile: loginModel.mobile,
+        email: loginModel.email,
         code: loginModel.code,
-        type: 'mobile',
-      } as unknown as LoginMobileParams
+        type: 'email',
+      } as unknown as LoginEmailParams
     }
     const { data } = await loginApi(params)
     token.value = data?.token
@@ -121,11 +120,9 @@ onBeforeUnmount(() => {
               <img w-full h-full object-cover src="/logo.svg">
             </span>
             <span class="ant-pro-form-login-title">
-              Antdv Pro
+              API聚合平台
             </span>
-            <span class="ant-pro-form-login-desc">
-              {{ t("pages.layouts.userLayout.title") }}
-            </span>
+            <span class="ant-pro-form-login-desc" />
           </div>
           <div class="login-lang flex-center relative z-11">
             <span
@@ -159,7 +156,7 @@ onBeforeUnmount(() => {
             <a-form ref="formRef" :model="loginModel">
               <a-tabs v-model:activeKey="loginModel.type" centered>
                 <a-tab-pane key="account" :tab="t('pages.login.accountLogin.tab')" />
-                <a-tab-pane key="mobile" :tab="t('pages.login.phoneLogin.tab')" />
+                <a-tab-pane key="email" :tab="t('pages.login.emailLogin.tab')" />
               </a-tabs>
               <!-- 判断是否存在error -->
               <a-alert
@@ -167,7 +164,7 @@ onBeforeUnmount(() => {
                 :message="t('pages.login.accountLogin.errorMessage')" type="error" show-icon
               />
               <a-alert
-                v-if="errorAlert && loginModel.type === 'mobile'" mb-24px
+                v-if="errorAlert && loginModel.type === 'email'" mb-24px
                 :message="t('pages.login.phoneLogin.errorMessage')" type="error" show-icon
               />
               <template v-if="loginModel.type === 'account'">
@@ -193,18 +190,18 @@ onBeforeUnmount(() => {
                   </a-input-password>
                 </a-form-item>
               </template>
-              <template v-if="loginModel.type === 'mobile'">
+              <template v-if="loginModel.type === 'email'">
                 <a-form-item
-                  name="mobile" :rules="[
+                  name="email" :rules="[
                     { required: true, message: t('pages.login.phoneNumber.required') },
                     {
-                      pattern: /^(86)?1([38][0-9]|4[579]|5[0-35-9]|6[6]|7[0135678]|9[89])[0-9]{8}$/,
+                      pattern: /^[A-Za-z0-9]+([-._][A-Za-z0-9]+)*@[A-Za-z0-9]+(-[A-Za-z0-9]+)*(\.[A-Za-z]{2,6}|[A-Za-z]{2,4}\.[A-Za-z]{2,3})$/,
                       message: t('pages.login.phoneNumber.invalid'),
                     },
                   ]"
                 >
                   <a-input
-                    v-model:value="loginModel.mobile" allow-clear
+                    v-model:value="loginModel.email" allow-clear
                     :placeholder="t('pages.login.phoneNumber.placeholder')" size="large" @press-enter="submit"
                   >
                     <template #prefix>
@@ -245,26 +242,25 @@ onBeforeUnmount(() => {
               </a-button>
             </a-form>
             <a-divider>
-              <span class="text-slate-500">{{ t('pages.login.loginWith') }}</span>
+              <router-link to="/register">
+                <a-button type="link" block>
+                  {{ t('pages.login.registerAccount') }}
+                </a-button>
+              </router-link>
             </a-divider>
-            <div class="ant-pro-form-login-other">
-              <AlipayCircleFilled class="icon" />
-              <TaobaoCircleFilled class="icon" />
-              <WeiboCircleFilled class="icon" />
-            </div>
           </div>
         </div>
       </div>
     </div>
-    <div py-24px px-50px fixed bottom-0 z-11 w-screen :data-theme="layoutSetting.theme" text-14px>
-      <GlobalLayoutFooter
-        :copyright="layoutSetting.copyright" icp="鲁ICP备2023021414号-2"
-      >
-        <template #renderFooterLinks>
-          <footer-links />
-        </template>
-      </GlobalLayoutFooter>
-    </div>
+    <!--    <div py-24px px-50px fixed bottom-0 z-11 w-screen :data-theme="layoutSetting.theme" text-14px> -->
+    <!--      <GlobalLayoutFooter -->
+    <!--        :copyright="layoutSetting.copyright" icp="鲁ICP备2023021414号-2" -->
+    <!--      > -->
+    <!--        <template #renderFooterLinks> -->
+    <!--          <footer-links /> -->
+    <!--        </template> -->
+    <!--      </GlobalLayoutFooter> -->
+    <!--    </div> -->
   </div>
 </template>
 

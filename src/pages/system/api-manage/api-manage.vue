@@ -2,7 +2,7 @@
 import { PlusOutlined } from '@ant-design/icons-vue'
 import CrudTableModal from './components/apiInfoAddOrUpdateForm.vue'
 import { useTableQuery } from '~/composables/table-query.ts'
-import { deleteApiInfoByIds, getApiInfoPageList } from '~/api/common/api.ts'
+import { deleteApiInfoByIds, getApiInfoPageList } from '~/api/api.ts'
 
 const message = useMessage()
 

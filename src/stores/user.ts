@@ -1,7 +1,7 @@
-import { logoutApi } from '~@/api/common/login'
-import { getRouteMenusApi } from '~@/api/common/menu'
-import type { UserInfo } from '~@/api/common/user'
-import { getUserInfoApi } from '~@/api/common/user'
+import { logoutApi } from '~/api/login.ts'
+import { getRouteMenusApi } from '~/api/menu.ts'
+import type { UserInfo } from '~/api/user.ts'
+import { getUserInfoApi } from '~/api/user.ts'
 
 import type { MenuData } from '~@/layouts/basic-layout/typing'
 import { rootRoute } from '~@/router/constant'
@@ -14,7 +14,6 @@ export const useUserStore = defineStore('user', () => {
   const userInfo = shallowRef<UserInfo>()
   const token = useAuthorization()
   const avatar = computed(() => userInfo.value?.avatar)
-  const nickname = computed(() => userInfo.value?.nickName ?? userInfo.value?.username)
   const roles = computed(() => userInfo.value?.roles)
 
   const getMenuRoutes = async () => {
@@ -66,6 +65,5 @@ export const useUserStore = defineStore('user', () => {
     menuData,
     generateDynamicRoutes,
     avatar,
-    nickname,
   }
 })

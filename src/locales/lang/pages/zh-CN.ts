@@ -156,7 +156,7 @@ export default {
   'account.settings.account-setting': '账号绑定',
   'account.settings.message-setting': '新消息通知',
   'account.settings.form-email': '邮箱',
-  'account.settings.form-name': '昵称',
+  'account.settings.form-name': '',
   'account.settings.form-region': '国家/地区',
   'account.settings.form-address': '街道地址',
   'account.settings.form-phoneNumber': '联系电话',
