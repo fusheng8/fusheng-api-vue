@@ -2,7 +2,7 @@
 import ChartCard from '~/pages/account/center/components/chart-card.vue'
 import Field from '~/pages/account/center/components/field.vue'
 import { useUserStore } from '~/stores/user.ts'
-import { resetSecretKey } from '~/api/user.ts'
+import ResetSecretKey from '~/pages/account/center/components/resetSecretKey.vue'
 
 defineProps({
   loading: {
@@ -11,6 +11,7 @@ defineProps({
   },
 })
 
+const resetSecretKeyModel = ref()
 const notification = useNotification()
 const userInfo = ref(useUserStore().userInfo)
 const topColResponsiveProps = {
@@ -23,12 +24,14 @@ const topColResponsiveProps = {
 }
 
 function resetSK() {
-  resetSecretKey().then((res) => {
-    userInfo.value.secretKey = res.data
-    notification.success({
-      message: '重置成功',
-      duration: 3,
-    })
+  resetSecretKeyModel.value?.open()
+}
+
+function resetSkSuccess(res) {
+  userInfo.value.secretKey = res
+  notification.success({
+    message: '重置成功',
+    duration: 3,
   })
 }
 </script>
@@ -41,7 +44,7 @@ function resetSK() {
           <a-avatar :src="userInfo.avatar" />
         </template>
         <template #total>
-          <span>{{ userInfo.useraname }}</span>
+          <span>{{ userInfo.username }}</span>
         </template>
         <a-button type="link" @click="notification.warning({ message: '暂未开发', duration: 3 })">
           个人信息
@@ -71,6 +74,7 @@ function resetSK() {
       </ChartCard>
     </a-col>
   </a-row>
+  <ResetSecretKey ref="resetSecretKeyModel" @ok="resetSkSuccess" />
 </template>
 
 <style scoped lang="less">

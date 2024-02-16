@@ -14,7 +14,7 @@ const router = useRouter()
 const registerModel = reactive({
   username: '',
   password: '',
-  email: '2757741589@qq.com',
+  email: '',
   code: '',
   password1: '',
 })
@@ -23,7 +23,7 @@ const codeLoading = shallowRef(false)
 const resetCounter = 60
 const submitLoading = shallowRef(false)
 const bubbleCanvas = ref<HTMLCanvasElement>()
-const { counter, pause, isActive } = useInterval(1000, {
+const { counter, pause, reset, resume, isActive } = useInterval(1000, {
   controls: true,
   immediate: false,
   callback(count) {
@@ -33,12 +33,13 @@ const { counter, pause, isActive } = useInterval(1000, {
     }
   },
 })
-
 async function getCode() {
   codeLoading.value = true
   try {
     await formRef.value.validate(['email'])
     await sendRegisterCode({ email: registerModel.email })
+    reset()
+    resume()
     message.success('验证码发送成功')
     codeLoading.value = false
   }
@@ -199,6 +200,13 @@ async function checkPasswordSame(_rule: Rule, value: string) {
               <a-button type="primary" block :loading="submitLoading" size="large" @click="submit">
                 注册
               </a-button>
+              <a-divider>
+                <router-link to="/login">
+                  <a-button type="link" block>
+                    返回登录
+                  </a-button>
+                </router-link>
+              </a-divider>
             </a-form>
           </div>
         </div>
