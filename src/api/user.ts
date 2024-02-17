@@ -24,3 +24,6 @@ export async function addOrUpdateUser(params?: any) {
 export async function resetSecretKey(params?: any) {
   return useGet('/user/resetSecretKey', params)
 }
+export async function resetPassword(params?: any) {
+  return usePost('/user/resetPassword', params)
+}

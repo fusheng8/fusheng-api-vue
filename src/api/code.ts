@@ -7,3 +7,6 @@ export function sendResetSkCode() {
 export function sendEmailLoginCode(params?: any) {
   return useGet('/code/sendEmailLoginCode', params)
 }
+export function sendResetPasswordCode(params?: any) {
+  return useGet('/code/sendResetPasswordCode', params)
+}

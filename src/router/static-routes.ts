@@ -18,6 +18,13 @@ export default [
     },
   },
   {
+    path: '/resetPassword',
+    component: () => import('~/pages/common/resetPassword.vue'),
+    meta: {
+      title: '重置密码',
+    },
+  },
+  {
     path: '/401',
     name: 'Error401',
     component: () => import('~/pages/exception/401.vue'),

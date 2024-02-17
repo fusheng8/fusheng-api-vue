@@ -233,7 +233,9 @@ onBeforeUnmount(() => {
                 <a-checkbox v-model:checked="loginModel.remember">
                   自动登录
                 </a-checkbox>
-                <a>忘记密码</a>
+                <router-link to="/resetPassword">
+                  忘记密码
+                </router-link>
               </div>
               <a-button type="primary" block :loading="submitLoading" size="large" @click="submit">
                 登录
