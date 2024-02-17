@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons-vue'
+import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons-vue'
 import { delayTimer } from '@v-c/utils'
 import { AxiosError } from 'axios'
 import { loginApi } from '~/api/login.ts'
 import { getQueryParam } from '~/utils/tools'
 import type { LoginEmailParams, LoginParams } from '~/api/login.ts'
 import pageBubble from '@/utils/page-bubble'
+import { sendEmailLoginCode } from '~/api/code.ts'
 
 const message = useMessage()
 const notification = useNotification()
@@ -14,14 +15,13 @@ const { layoutSetting } = storeToRefs(appStore)
 const router = useRouter()
 const token = useAuthorization()
 const loginModel = reactive({
+  type: 'account',
   username: 'admin',
   password: '123456',
   email: undefined,
   code: undefined,
-  type: 'account',
   remember: true,
 })
-const { t } = useI18nLocale()
 const formRef = shallowRef()
 const codeLoading = shallowRef(false)
 const resetCounter = 60
@@ -42,12 +42,11 @@ async function getCode() {
   codeLoading.value = true
   try {
     await formRef.value.validate(['email'])
-    setTimeout(() => {
-      reset()
-      resume()
-      codeLoading.value = false
-      message.success('验证码是：123456')
-    }, 3000)
+    await sendEmailLoginCode({ email: loginModel.email })
+    reset()
+    resume()
+    codeLoading.value = false
+    message.success('发送成功')
   }
   catch (error) {
     codeLoading.value = false
@@ -137,7 +136,6 @@ onBeforeUnmount(() => {
                 <carbon-sun />
               </template>
             </span>
-            <SelectLang />
           </div>
         </div>
         <a-divider m-0 />
@@ -151,38 +149,38 @@ onBeforeUnmount(() => {
           <!-- 登录框右侧 -->
           <div class="ant-pro-form-login-main-right px-5 w-[335px] flex-center flex-col relative z-11">
             <div class="text-center py-6 text-2xl">
-              {{ t('pages.login.tips') }}
+              欢迎使用本系统
             </div>
             <a-form ref="formRef" :model="loginModel">
               <a-tabs v-model:activeKey="loginModel.type" centered>
-                <a-tab-pane key="account" :tab="t('pages.login.accountLogin.tab')" />
-                <a-tab-pane key="email" :tab="t('pages.login.emailLogin.tab')" />
+                <a-tab-pane key="account" tab="账户密码登录" />
+                <a-tab-pane key="email" tab="邮箱登录" />
               </a-tabs>
               <!-- 判断是否存在error -->
               <a-alert
                 v-if="errorAlert && loginModel.type === 'account'" mb-24px
-                :message="t('pages.login.accountLogin.errorMessage')" type="error" show-icon
+                message="错误的用户名和密码" type="error" show-icon
               />
               <a-alert
                 v-if="errorAlert && loginModel.type === 'email'" mb-24px
-                :message="t('pages.login.phoneLogin.errorMessage')" type="error" show-icon
+                message="验证码错误" type="error" show-icon
               />
               <template v-if="loginModel.type === 'account'">
-                <a-form-item name="username" :rules="[{ required: true, message: t('pages.login.username.required') }]">
+                <a-form-item name="username" :rules="[{ required: true, message: '用户名是必填项' }]">
                   <a-input
                     v-model:value="loginModel.username" allow-clear
                     autocomplete="off"
-                    :placeholder="t('pages.login.username.placeholder')" size="large" @press-enter="submit"
+                    placeholder="用户名:" size="large" @press-enter="submit"
                   >
                     <template #prefix>
                       <UserOutlined />
                     </template>
                   </a-input>
                 </a-form-item>
-                <a-form-item name="password" :rules="[{ required: true, message: t('pages.login.password.required') }]">
+                <a-form-item name="password" :rules="[{ required: true, message: '密码是必填项' }]">
                   <a-input-password
                     v-model:value="loginModel.password" allow-clear
-                    :placeholder="t('pages.login.password.placeholder')" size="large" @press-enter="submit"
+                    placeholder="密码" size="large" @press-enter="submit"
                   >
                     <template #prefix>
                       <LockOutlined />
@@ -193,28 +191,28 @@ onBeforeUnmount(() => {
               <template v-if="loginModel.type === 'email'">
                 <a-form-item
                   name="email" :rules="[
-                    { required: true, message: t('pages.login.phoneNumber.required') },
+                    { required: true, message: '邮箱是必填项' },
                     {
                       pattern: /^[A-Za-z0-9]+([-._][A-Za-z0-9]+)*@[A-Za-z0-9]+(-[A-Za-z0-9]+)*(\.[A-Za-z]{2,6}|[A-Za-z]{2,4}\.[A-Za-z]{2,3})$/,
-                      message: t('pages.login.phoneNumber.invalid'),
+                      message: '请输入正确的邮箱',
                     },
                   ]"
                 >
                   <a-input
                     v-model:value="loginModel.email" allow-clear
-                    :placeholder="t('pages.login.phoneNumber.placeholder')" size="large" @press-enter="submit"
+                    placeholder="请输入邮箱" size="large" @press-enter="submit"
                   >
                     <template #prefix>
-                      <MobileOutlined />
+                      <MailOutlined />
                     </template>
                   </a-input>
                 </a-form-item>
-                <a-form-item name="code" :rules="[{ required: true, message: t('pages.login.captcha.required') }]">
+                <a-form-item name="code" :rules="[{ required: true, message: '验证码是必填项' }]">
                   <div flex items-center>
                     <a-input
                       v-model:value="loginModel.code"
                       style="flex: 1 1 0%; transition: width 0.3s ease 0s; margin-right: 8px;" allow-clear
-                      :placeholder="t('pages.login.captcha.placeholder')" size="large" @press-enter="submit"
+                      placeholder="请输入验证码" size="large" @press-enter="submit"
                     >
                       <template #prefix>
                         <LockOutlined />
@@ -222,10 +220,10 @@ onBeforeUnmount(() => {
                     </a-input>
                     <a-button :loading="codeLoading" :disabled="isActive" size="large" @click="getCode">
                       <template v-if="!isActive">
-                        {{ t('pages.login.phoneLogin.getVerificationCode') }}
+                        获取验证码
                       </template>
                       <template v-else>
-                        {{ resetCounter - counter }} {{ t('pages.getCaptchaSecondText') }}
+                        {{ resetCounter - counter }} 秒后重新获取
                       </template>
                     </a-button>
                   </div>
@@ -233,18 +231,18 @@ onBeforeUnmount(() => {
               </template>
               <div class="mb-24px flex-between">
                 <a-checkbox v-model:checked="loginModel.remember">
-                  {{ t('pages.login.rememberMe') }}
+                  自动登录
                 </a-checkbox>
-                <a>{{ t('pages.login.forgotPassword') }}</a>
+                <a>忘记密码</a>
               </div>
               <a-button type="primary" block :loading="submitLoading" size="large" @click="submit">
-                {{ t('pages.login.submit') }}
+                登录
               </a-button>
             </a-form>
             <a-divider>
               <router-link to="/register">
                 <a-button type="link" block>
-                  {{ t('pages.login.registerAccount') }}
+                  注册账号
                 </a-button>
               </router-link>
             </a-divider>

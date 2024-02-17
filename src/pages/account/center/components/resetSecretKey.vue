@@ -11,7 +11,6 @@ import { resetSecretKey } from '~/api/user.ts'
 
 const emit = defineEmits(['cancel', 'ok'])
 
-const isUpdate = ref(false)
 const visible = ref(false)
 const formRef = ref<FormInstance>()
 const formData = ref<any>({
@@ -19,7 +18,6 @@ const formData = ref<any>({
 })
 const codeLoading = shallowRef(false)
 const resetCounter = 60
-const submitLoading = shallowRef(false)
 const { counter, pause, reset, resume, isActive } = useInterval(1000, {
   controls: true,
   immediate: false,
@@ -38,7 +36,7 @@ function open() {
 async function getCode() {
   codeLoading.value = true
   try {
-    await formRef.value.validate(['email'])
+    await formRef.value?.validate(['email'])
     await sendResetSkCode()
     reset()
     resume()
@@ -88,7 +86,7 @@ defineExpose({
           <a-input
             v-model:value="formData.code"
             style="flex: 1 1 0; transition: width 0.3s ease 0s; margin-right: 8px;" allow-clear
-            placeholder="请输入验证码" size="large" @press-enter="submit"
+            placeholder="请输入验证码" size="large"
           >
             <template #prefix>
               <LockOutlined />

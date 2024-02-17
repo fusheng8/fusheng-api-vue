@@ -4,3 +4,6 @@ export function sendRegisterCode(params?: any) {
 export function sendResetSkCode() {
   return useGet('/code/sendResetSkCode')
 }
+export function sendEmailLoginCode(params?: any) {
+  return useGet('/code/sendEmailLoginCode', params)
+}
