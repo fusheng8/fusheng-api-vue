@@ -23,16 +23,6 @@ const instance: AxiosInstance = axios.create({
 })
 const axiosLoading = new AxiosLoading()
 async function requestHandler(config: InternalAxiosRequestConfig & RequestConfigExtra): Promise<InternalAxiosRequestConfig> {
-  // 处理请求前的url
-  if (
-    import.meta.env.DEV
-      && import.meta.env.VITE_APP_BASE_API_DEV
-      && import.meta.env.VITE_APP_BASE_URL_DEV
-      && config.customDev
-  ) {
-    //  替换url的请求前缀baseUrl
-    config.baseURL = import.meta.env.VITE_APP_BASE_API_DEV
-  }
   const token = useAuthorization()
 
   if (token.value && config.token !== false)

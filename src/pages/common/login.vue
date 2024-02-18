@@ -61,6 +61,7 @@ async function submit() {
 
     if (loginModel.type === 'account') {
       params = {
+        type: loginModel.type,
         username: loginModel.username,
         password: loginModel.password,
       } as unknown as LoginParams

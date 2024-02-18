@@ -27,3 +27,10 @@ export async function resetSecretKey(params?: any) {
 export async function resetPassword(params?: any) {
   return usePost('/user/resetPassword', params)
 }
+export async function payBalance(params?: any) {
+  return useGet('/user/payBalance', params)
+}
+
+export async function getPayBalanceStatus(params?: any) {
+  return useGet('/user/payBalanceStatus', params)
+}
