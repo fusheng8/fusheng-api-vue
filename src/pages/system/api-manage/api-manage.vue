@@ -3,8 +3,12 @@ import { PlusOutlined } from '@ant-design/icons-vue'
 import CrudTableModal from './components/apiInfoAddOrUpdateForm.vue'
 import { useTableQuery } from '~/composables/table-query.ts'
 import { deleteApiInfoByIds, getApiInfoPageList } from '~/api/api.ts'
+import { AccessEnum } from '~/utils/constant.ts'
 
+const { hasAccess } = useAccess()
+const { userInfo } = useUserStore()
 const message = useMessage()
+const isAdmin = hasAccess(AccessEnum.ADMIN)
 
 const columns = shallowRef([
   {
@@ -50,6 +54,7 @@ const { state, initQuery, resetQuery, query } = useTableQuery({
     name: undefined,
     status: undefined,
     method: undefined,
+    userId: isAdmin ? undefined : userInfo?.id,
   },
   afterQuery: (res) => {
     return res
@@ -71,8 +76,23 @@ async function handleDelete(record: any[]) {
 function handleAdd() {
   crudTableModal.value?.open({})
 }
-function handleEdit(record: any) {
-  crudTableModal.value?.open(record)
+function handleEdit(record: any, readonly: boolean) {
+  crudTableModal.value?.open(record, readonly, true)
+}
+
+function statusCodeToName(status: number) {
+  switch (status) {
+    case 0:
+      return '待审核'
+    case 1:
+      return '审核失败'
+    case 2:
+      return '下线'
+    case 3:
+      return '正常'
+    default:
+      return '未知'
+  }
 }
 </script>
 
@@ -101,11 +121,17 @@ function handleEdit(record: any) {
           <a-col :span="6">
             <a-form-item name="method" label="状态">
               <a-select v-model:value="state.queryParams.status" placeholder="请选择状态">
-                <a-select-option value="1">
-                  上线
+                <a-select-option :value="0">
+                  待审核
                 </a-select-option>
-                <a-select-option value="0">
+                <a-select-option :value="1">
+                  审核失败
+                </a-select-option>
+                <a-select-option :value="2">
                   下线
+                </a-select-option>
+                <a-select-option :value="3">
+                  正常
                 </a-select-option>
               </a-select>
             </a-form-item>
@@ -131,7 +157,7 @@ function handleEdit(record: any) {
             <template #icon>
               <PlusOutlined />
             </template>
-            新增
+            {{ isAdmin ? '新增' : '发布接口' }}
           </a-button>
         </a-space>
       </template>
@@ -148,17 +174,18 @@ function handleEdit(record: any) {
           </template>
 
           <template v-else-if="scope?.column?.dataIndex === 'status'">
-            <a-tag :color="scope?.record?.status === 1 ? 'success' : 'error'">
-              {{ scope?.record?.status === 1 ? '上线' : '下线' }}
+            <a-tag>
+              {{ statusCodeToName(scope?.record?.status) }}
             </a-tag>
           </template>
 
           <template v-if="scope?.column?.dataIndex === 'action'">
             <div flex gap-2>
-              <a-button type="link" @click="handleEdit(scope?.record)">
-                编辑
+              <a-button type="link" @click="handleEdit(scope?.record, isAdmin && scope?.record?.status === 0)">
+                {{ isAdmin && scope?.record?.status === 0 ? '查看' : '编辑' }}
               </a-button>
               <a-popconfirm
+                v-if="!(isAdmin && scope?.record?.status === 0)"
                 title="确定删除该条数据？" ok-text="确定" cancel-text="取消"
                 @confirm="handleDelete([scope?.record])"
               >

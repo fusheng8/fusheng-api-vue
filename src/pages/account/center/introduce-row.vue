@@ -1,4 +1,5 @@
 <script setup>
+import WithdrawBalanceForm from './components/withdrawBalanceForm.vue'
 import ChartCard from '~/pages/account/center/components/chart-card.vue'
 import Field from '~/pages/account/center/components/field.vue'
 import { useUserStore } from '~/stores/user.ts'
@@ -15,6 +16,7 @@ defineProps({
 const resetSecretKeyModel = ref()
 const notification = useNotification()
 const userInfo = ref(useUserStore().userInfo)
+const withdrawBalanceForm = ref()
 const topColResponsiveProps = {
   xs: 24,
   sm: 12,
@@ -75,6 +77,9 @@ function numberRep(value) {
         <a-button type="link" @click="payBalanceModel = true">
           充值积分
         </a-button>
+        <a-button type="link" @click="withdrawBalanceForm.open()">
+          提现
+        </a-button>
         <template #footer>
           <Field label="剩余积分：" :value="userInfo.balance" />
         </template>
@@ -109,6 +114,7 @@ function numberRep(value) {
       </a-form-item>
     </a-form>
   </a-modal>
+  <WithdrawBalanceForm ref="withdrawBalanceForm" />
 </template>
 
 <style scoped lang="less">

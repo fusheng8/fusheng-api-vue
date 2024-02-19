@@ -3,22 +3,25 @@ import type { FormInstance } from 'ant-design-vue'
 import { notification } from 'ant-design-vue'
 import { cloneDeep } from 'lodash'
 import { computed, defineEmits, defineExpose, ref } from 'vue'
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons-vue'
-import { useAuthorization } from '~/composables/authorization'
 import ParamTable from '~/components/param-table/param-table.vue'
 import { requestHeaderOptions } from '~/param-table-options/requestHeaderOptions'
 import { requestParamOptions } from '~/param-table-options/requestParamOptions'
 import { responseParamOptions } from '~/param-table-options/responseParamOptions'
-import { saveOrUpdateApiInfo } from '~/api/api.ts'
+import { reviewApi, saveOrUpdateApiInfo } from '~/api/api.ts'
+import { AccessEnum } from '~/utils/constant.ts'
+import ImageUpload from '~/components/image-upload/image-upload.vue'
 
 const emit = defineEmits(['cancel', 'ok'])
 
-const isUpdate = ref(false)
-const avatarLoding = ref(false)
+const reviewMode = ref(false)
 
-const FILE_UPLOAD_URL = import.meta.env.VITE_APP_FILE_UPLOAD_URL
+const { hasAccess } = useAccess()
+
+const isUpdate = ref(false)
+const isAdmin = hasAccess(AccessEnum.ADMIN)
 
 const visible = ref(false)
+const onlyRead = ref(false)
 
 const title = computed(() => {
   return isUpdate.value ? '编辑' : '新增'
@@ -27,13 +30,14 @@ const title = computed(() => {
 const formRef = ref<FormInstance>()
 
 const formData = ref<any>({})
-
 const labelCol = { style: { width: '100px' } }
 const wrapperCol = { span: 24 }
 
-function open(record?: any) {
+function open(record?: any, readonly?: boolean, isReviewMode?: boolean) {
   visible.value = true
   isUpdate.value = !!record?.id
+  onlyRead.value = !!readonly
+  reviewMode.value = !!isReviewMode
   if (!isUpdate.value)
     formData.value = {}
   else
@@ -41,38 +45,45 @@ function open(record?: any) {
 }
 
 async function handleOk() {
-  try {
-    await formRef.value?.validate()
-
-    await saveOrUpdateApiInfo(formData.value)
-
-    emit('ok')
+  if (reviewMode.value) {
+    // 审核模式
+    await reviewApi({ id: formData.value.id, status: 3 })
     notification?.success({
-      message: `${isUpdate.value ? '修改' : '增加'}成功`,
+      message: '审核成功',
       duration: 3,
     })
-    visible.value = false
   }
-  catch (error) {
+  else {
+    if (onlyRead.value) {
+      visible.value = false
+      return
+    }
+    try {
+      await formRef.value?.validate()
+      await saveOrUpdateApiInfo(formData.value)
+
+      emit('ok')
+      notification?.success({
+        message: `${isUpdate.value ? '修改' : '增加'}成功`,
+        duration: 3,
+      })
+    }
+    catch (error) {
+    }
   }
+  visible.value = false
 }
 
-function onFileStatusChange(res: any) {
-  switch (res.file.status) {
-    case 'uploading':
-      avatarLoding.value = true
-      break
-    case 'done':
-      formData.value.avatarUrl = res.file.response.data
-      avatarLoding.value = false
-      break
-    case 'error':
-      avatarLoding.value = false
-      break
+async function handleCancel() {
+  if (reviewMode.value) {
+    // 审核模式
+    await reviewApi({ id: formData.value.id, status: 1 })
+    notification?.success({
+      message: '审核成功',
+      duration: 3,
+    })
   }
-}
 
-function handleCancel() {
   formRef.value?.resetFields()
   emit('cancel')
 }
@@ -85,35 +96,20 @@ defineExpose({
 function numberRep(value: string | number) {
   if (typeof value === 'string')
     return !Number.isNaN(Number(value)) ? value.replace(/[^\d]/g, '') : ''
-  else if (typeof value === 'number')
-    return !Number.isNaN(value) ? String(value).replace(/[^\d]/g, '') : ''
   else
-    return ''
+    return !Number.isNaN(value) ? String(value).replace(/[^\d]/g, '') : ''
 }
 </script>
 
 <template>
-  <a-modal v-model:open="visible" :destroy-on-close="true" :width="800" :mask-closable="false" :title="title" @ok="handleOk" @cancel="handleCancel">
-    <a-form ref="formRef" :model="formData" class="w-full" :label-col="labelCol" :wrapper-col="wrapperCol">
+  <a-modal
+    v-model:open="visible"
+    :cancel-text="reviewMode ? '不通过' : '取消'" :ok-text="reviewMode ? '通过' : '确定'"
+    :destroy-on-close="true" :width="800" :mask-closable="false" :title="title" @ok="handleOk" @cancel="handleCancel"
+  >
+    <a-form ref="formRef" :disabled="onlyRead" :model="formData" class="w-full" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-form-item name="avatarUrl" label="接口封面">
-        <a-upload
-          name="file"
-          list-type="picture-card"
-          :show-upload-list="false"
-          :action="FILE_UPLOAD_URL"
-          :headers="{ token: useAuthorization().value || '' }"
-          :max-count="1"
-          @change="onFileStatusChange"
-        >
-          <img v-if="!avatarLoding && formData.avatarUrl" class="avatar-img" :src="formData.avatarUrl" alt="avatar">
-          <div v-else>
-            <LoadingOutlined v-if="avatarLoding" />
-            <PlusOutlined v-else />
-            <div class="ant-upload-text">
-              上传
-            </div>
-          </div>
-        </a-upload>
+        <ImageUpload v-model="formData.avatarUrl" />
       </a-form-item>
       <a-form-item name="name" label="接口名称" :rules="[{ required: true, message: '请输入接口名称' }]">
         <a-input v-model:value="formData.name" :maxlength="50" placeholder="请输入接口名称" />
@@ -132,13 +128,19 @@ function numberRep(value: string | number) {
             </a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item name="status" label="接口状态" :rules="[{ required: true, message: '请选择接口状态' }]">
+        <a-form-item v-if="isAdmin" name="status" label="接口状态" :rules="[{ required: true, message: '请选择接口状态' }]">
           <a-select v-model:value="formData.status" placeholder="请选择接口状态">
-            <a-select-option :value="1">
-              开启
-            </a-select-option>
             <a-select-option :value="0">
-              关闭
+              待审核
+            </a-select-option>
+            <a-select-option :value="1">
+              审核失败
+            </a-select-option>
+            <a-select-option :value="2">
+              下线
+            </a-select-option>
+            <a-select-option :value="3">
+              正常
             </a-select-option>
           </a-select>
         </a-form-item>
@@ -185,9 +187,5 @@ function numberRep(value: string | number) {
 </template>
 
 <style scoped>
-.avatar-img {
-  object-fit: fill;
-  height: 100%;
-  width: 100%;
-}
+
 </style>

@@ -31,6 +31,9 @@ export function saveOrUpdateApiInfo(params?: any) {
 export function deleteApiInfoByIds(params?: any) {
   return useGet(`/api-info/deleteByIds?ids=${params.join(',')}`)
 }
+export function reviewApi(params?: any) {
+  return useGet('/api-info/reviewApi', params)
+}
 
 export function queryApiInfoById(params?: any) {
   return new Promise((resolve, reject) => {

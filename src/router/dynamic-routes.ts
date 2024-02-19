@@ -69,4 +69,14 @@ export default [
       },
     ],
   },
+  {
+    path: '/system/api-info',
+    name: 'ApiManage',
+    component: () => import('~/pages/system/api-manage/api-manage.vue'),
+    meta: {
+      title: '我的接口',
+      icon: 'AntDesignOutlined',
+      access: 'user',
+    },
+  },
 ] as RouteRecordRaw[]

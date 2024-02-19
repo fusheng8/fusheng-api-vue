@@ -12,7 +12,7 @@ const pagination = ref({
 
 const queryParam = ref({
   name: undefined,
-  status: 1,
+  status: 3,
   method: undefined,
 })
 

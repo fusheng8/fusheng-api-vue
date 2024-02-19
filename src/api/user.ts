@@ -34,3 +34,7 @@ export async function payBalance(params?: any) {
 export async function getPayBalanceStatus(params?: any) {
   return useGet('/user/payBalanceStatus', params)
 }
+
+export async function withdrawBalance(params?: any) {
+  return usePost('/user/withdrawBalance', params)
+}
