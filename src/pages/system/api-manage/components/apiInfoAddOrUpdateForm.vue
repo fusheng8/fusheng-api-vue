@@ -32,6 +32,7 @@ const formRef = ref<FormInstance>()
 const formData = ref<any>({})
 const labelCol = { style: { width: '100px' } }
 const wrapperCol = { span: 24 }
+const apiGatewayUrl = import.meta.env.VITE_APP_API_GATEWAY_URL
 
 function open(record?: any, readonly?: boolean, isReviewMode?: boolean) {
   visible.value = true
@@ -113,6 +114,9 @@ function numberRep(value: string | number) {
       </a-form-item>
       <a-form-item name="name" label="接口名称" :rules="[{ required: true, message: '请输入接口名称' }]">
         <a-input v-model:value="formData.name" :maxlength="50" placeholder="请输入接口名称" />
+      </a-form-item>
+      <a-form-item name="mappingUrl" label="映射路径" :rules="[{ required: true, message: '请输入映射到网关的路径' }]">
+        <a-input v-model:value="formData.mappingUrl" :addon-before="apiGatewayUrl" :maxlength="200" placeholder="请输入映射到网关的路径" />
       </a-form-item>
       <a-form-item name="url" label="接口地址" :rules="[{ required: true, message: '请输入接口地址' }]">
         <a-input v-model:value="formData.url" :maxlength="200" placeholder="请输入接口地址" />

@@ -27,9 +27,9 @@ const columns = shallowRef([
     key: 'avatarUrl',
   },
   {
-    title: '接口地址',
-    dataIndex: 'url',
-    key: 'url',
+    title: '映射路径',
+    dataIndex: 'mappingUrl',
+    key: 'mappingUrl',
   },
   {
     title: '请求方法',
@@ -77,7 +77,7 @@ function handleAdd() {
   crudTableModal.value?.open({})
 }
 function handleEdit(record: any, readonly: boolean) {
-  crudTableModal.value?.open(record, readonly, true)
+  crudTableModal.value?.open(record, readonly, readonly)
 }
 
 function statusCodeToName(status: number) {
@@ -174,7 +174,7 @@ function statusCodeToName(status: number) {
           </template>
 
           <template v-else-if="scope?.column?.dataIndex === 'status'">
-            <a-tag>
+            <a-tag color="#2db7f5">
               {{ statusCodeToName(scope?.record?.status) }}
             </a-tag>
           </template>
