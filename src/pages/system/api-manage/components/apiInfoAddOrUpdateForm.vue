@@ -9,7 +9,6 @@ import { requestParamOptions } from '~/param-table-options/requestParamOptions'
 import { responseParamOptions } from '~/param-table-options/responseParamOptions'
 import { reviewApi, saveOrUpdateApiInfo } from '~/api/api.ts'
 import { AccessEnum } from '~/utils/constant.ts'
-import ImageUpload from '~/components/image-upload/image-upload.vue'
 
 const emit = defineEmits(['cancel', 'ok'])
 
@@ -110,7 +109,7 @@ function numberRep(value: string | number) {
   >
     <a-form ref="formRef" :disabled="onlyRead" :model="formData" class="w-full" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-form-item name="avatarUrl" label="接口封面">
-        <ImageUpload v-model="formData.avatarUrl" />
+        <FileUpload v-model="formData.avatarUrl" type="image" />
       </a-form-item>
       <a-form-item name="name" label="接口名称" :rules="[{ required: true, message: '请输入接口名称' }]">
         <a-input v-model:value="formData.name" :maxlength="50" placeholder="请输入接口名称" />

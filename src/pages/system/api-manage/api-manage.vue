@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { PlusOutlined } from '@ant-design/icons-vue'
-import CrudTableModal from './components/apiInfoAddOrUpdateForm.vue'
+import type CrudTableModal from './components/apiInfoAddOrUpdateForm.vue'
 import { useTableQuery } from '~/composables/table-query.ts'
 import { deleteApiInfoByIds, getApiInfoPageList } from '~/api/api.ts'
 import { AccessEnum } from '~/utils/constant.ts'
+import ApiInfoSdkAddOrUpdateForm from '~/pages/system/api-manage/components/apiInfoSdkAddOrUpdateForm.vue'
+import ApiInfoAddOrUpdateForm from '~/pages/system/api-manage/components/apiInfoAddOrUpdateForm.vue'
 
 const { hasAccess } = useAccess()
 const { userInfo } = useUserStore()
@@ -61,7 +63,8 @@ const { state, initQuery, resetQuery, query } = useTableQuery({
   },
 })
 
-const crudTableModal = ref<InstanceType<typeof CrudTableModal>>()
+const apiInfoCrudTableModal = ref<InstanceType<typeof CrudTableModal>>()
+const apiInfoSdkCrudTableModal = ref()
 
 async function handleDelete(record: any[]) {
   // 解构出id数组
@@ -74,10 +77,13 @@ async function handleDelete(record: any[]) {
 }
 
 function handleAdd() {
-  crudTableModal.value?.open({})
+  apiInfoCrudTableModal.value?.open({})
 }
 function handleEdit(record: any, readonly: boolean) {
-  crudTableModal.value?.open(record, readonly, readonly)
+  apiInfoCrudTableModal.value?.open(record, readonly, readonly)
+}
+function handEditSdk(id: any) {
+  apiInfoSdkCrudTableModal.value?.open(id)
 }
 
 function statusCodeToName(status: number) {
@@ -184,6 +190,9 @@ function statusCodeToName(status: number) {
               <a-button type="link" @click="handleEdit(scope?.record, isAdmin && scope?.record?.status === 0)">
                 {{ isAdmin && scope?.record?.status === 0 ? '查看' : '编辑' }}
               </a-button>
+              <a-button v-if="scope?.record?.status !== 0" type="link" @click="handEditSdk(scope?.record.id)">
+                编辑SDK
+              </a-button>
               <a-popconfirm
                 v-if="!(isAdmin && scope?.record?.status === 0)"
                 title="确定删除该条数据？" ok-text="确定" cancel-text="取消"
@@ -199,7 +208,8 @@ function statusCodeToName(status: number) {
       </a-table>
     </a-card>
 
-    <CrudTableModal ref="crudTableModal" @ok="query" />
+    <ApiInfoAddOrUpdateForm ref="apiInfoCrudTableModal" @ok="query" />
+    <ApiInfoSdkAddOrUpdateForm ref="apiInfoSdkCrudTableModal" @ok="query" />
   </page-container>
 </template>
 

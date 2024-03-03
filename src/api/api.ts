@@ -35,6 +35,10 @@ export function reviewApi(params?: any) {
   return useGet('/api-info/reviewApi', params)
 }
 
+export function updateApiSdk(params?: any) {
+  return usePost('/api-info/updateApiSdk', params)
+}
+
 export function queryApiInfoById(params?: any) {
   return new Promise((resolve, reject) => {
     return useGet('/api-info/queryById', params).then((res) => {
@@ -52,6 +56,10 @@ export function queryApiInfoById(params?: any) {
         if (data.responseParams)
           data.responseParams = JSON.parse(data.responseParams)
         else data.responseParams = []
+
+        if (data.sdk)
+          data.sdk = JSON.parse(data.sdk)
+        else data.sdk = []
         resolve(res)
       }
     }).catch((err) => {

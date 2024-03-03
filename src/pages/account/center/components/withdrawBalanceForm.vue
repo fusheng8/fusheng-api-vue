@@ -3,7 +3,7 @@ import type { FormInstance } from 'ant-design-vue'
 import { notification } from 'ant-design-vue'
 import { defineEmits, defineExpose, ref } from 'vue'
 import { useUserStore } from '~/stores/user.ts'
-import ImageUpload from '~/components/image-upload/image-upload.vue'
+import ImageUpload from '~/components/file-upload/file-upload.vue'
 import { withdrawBalance } from '~/api/user.ts'
 
 const emit = defineEmits(['cancel', 'ok'])

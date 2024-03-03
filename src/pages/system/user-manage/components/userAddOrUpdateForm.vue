@@ -3,7 +3,6 @@ import type { FormInstance } from 'ant-design-vue'
 import { notification } from 'ant-design-vue'
 import { cloneDeep } from 'lodash'
 import { computed, defineEmits, defineExpose, ref } from 'vue'
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { addOrUpdateUser } from '~/api/user.ts'
 
 const emit = defineEmits(['cancel', 'ok'])
@@ -87,24 +86,7 @@ defineExpose({
   <a-modal v-model:open="visible" :title="title" :mask-closable="false" @ok="handleOk" @cancel="handleCancel">
     <a-form ref="formRef" :model="formData" class="w-full" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-form-item name="avatar" label="头像">
-        <a-upload
-          name="file"
-          list-type="picture-card"
-          :show-upload-list="false"
-          :action="FILE_UPLOAD_URL"
-          :headers="{ token }"
-          :max-count="1"
-          @change="onFileStatusChange"
-        >
-          <img v-if="!avatarLoding && formData.avatar" class="avatar-img" :src="formData.avatar" alt="avatar">
-          <div v-else>
-            <LoadingOutlined v-if="avatarLoding" />
-            <PlusOutlined v-else />
-            <div class="ant-upload-text">
-              上传
-            </div>
-          </div>
-        </a-upload>
+        <FileUpload v-model="formData.avatarUrl" type="image" />
       </a-form-item>
       <a-form-item name="username" label="用户名" :rules="[{ required: true, message: '请输入用户名' }]">
         <a-input v-model:value="formData.username" :maxlength="50" placeholder="请输入用户名" />

@@ -1,23 +1,26 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import { LoadingOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons-vue'
 import { useAuthorization } from '~/composables/authorization.ts'
 
+const { type } = defineProps<{
+  type?: string
+}>()
 const FILE_UPLOAD_URL = import.meta.env.VITE_APP_FILE_UPLOAD_URL
-const imageLoding = ref(false)
+const FileLoding = ref(false)
 
-const imageUrl = defineModel()
+const fileUrl = defineModel()
 function onFileStatusChange(res: any) {
   switch (res.file.status) {
     case 'uploading':
-      imageLoding.value = true
+      FileLoding.value = true
       break
     case 'done':
-      imageUrl.value = res.file.response.data
-      imageLoding.value = false
+      fileUrl.value = res.file.response.data
+      FileLoding.value = false
       break
     case 'error':
-      imageLoding.value = false
+      FileLoding.value = false
       break
   }
 }
@@ -33,14 +36,20 @@ function onFileStatusChange(res: any) {
     :max-count="1"
     @change="onFileStatusChange"
   >
-    <img v-if="!imageLoding && imageUrl" class="avatar-img" :src="imageUrl" alt="avatar">
-    <div v-else>
-      <LoadingOutlined v-if="imageLoding" />
-      <PlusOutlined v-else />
-      <div class="ant-upload-text">
-        上传
+    <template v-if="type === 'image' ">
+      <img v-if="!FileLoding && fileUrl" class="avatar-img" :src="fileUrl" alt="avatar">
+      <div v-else>
+        <LoadingOutlined v-if="FileLoding" />
+        <PlusOutlined v-else />
+        <div class="ant-upload-text">
+          上传图片
+        </div>
       </div>
-    </div>
+    </template>
+    <template v-else>
+      <UploadOutlined />
+      上传文件
+    </template>
   </a-upload>
 </template>
 

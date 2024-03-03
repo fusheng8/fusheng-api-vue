@@ -1,9 +1,10 @@
 <script setup>
-import { responseParamOptions } from '~/param-table-options/responseParamOptions.js'
-import { requestParamOptions } from '~/param-table-options/requestParamOptions.js'
-import { requestHeaderOptions } from '~/param-table-options/requestHeaderOptions.js'
 import { queryApiInfoById } from '~/api/api.ts'
 import ApiDebug from '~/pages/api-info/api-info/components/api-debug.vue'
+import ApiSdk from '~/pages/api-info/api-info/components/api-sdk.vue'
+import { requestHeaderOptions } from '~/param-table-options/requestHeaderOptions.js'
+import { requestParamOptions } from '~/param-table-options/requestParamOptions.js'
+import { responseParamOptions } from '~/param-table-options/responseParamOptions.js'
 
 defineOptions({
   name: 'ApiInfo',
@@ -52,30 +53,33 @@ onMounted(async () => {
       <a-tabs v-model:activeKey="tabActiveKey" class="mb--7">
         <a-tab-pane key="api-doc" tab="接口文档" />
         <a-tab-pane key="api-debug" tab="在线调试" force-render />
+        <a-tab-pane key="api-sdk" tab="SDK下载" force-render />
       </a-tabs>
 
       <a-card v-show="tabActiveKey === 'api-doc'" :bordered="false" class="my-5">
-        <template v-if="isLoadFinish">
-          <a-card title="请求头">
-            <ParamTable v-model="info.requestHeader" :options="requestHeaderOptions" />
-          </a-card>
-          <a-card title="请求参数">
-            <ParamTable v-model="info.requestParams" :options="requestParamOptions" />
-          </a-card>
-          <a-card title="响应参数">
-            <ParamTable v-model="info.responseParams" :options="responseParamOptions" />
-          </a-card>
-          <a-card title="请求示例">
-            <a-textarea :value="info.requestExample" :bordered="false" :auto-size="true" />
-          </a-card>
-          <a-card title="响应示例">
-            <a-textarea :value="info.responseExample" :bordered="false" :auto-size="true" />
-          </a-card>
-        </template>
+        <a-card title="请求头">
+          <ParamTable v-model="info.requestHeader" :options="requestHeaderOptions" />
+        </a-card>
+        <a-card title="请求参数">
+          <ParamTable v-model="info.requestParams" :options="requestParamOptions" />
+        </a-card>
+        <a-card title="响应参数">
+          <ParamTable v-model="info.responseParams" :options="responseParamOptions" />
+        </a-card>
+        <a-card title="请求示例">
+          <a-textarea :value="info.requestExample" :bordered="false" :auto-size="true" />
+        </a-card>
+        <a-card title="响应示例">
+          <a-textarea :value="info.responseExample" :bordered="false" :auto-size="true" />
+        </a-card>
       </a-card>
 
       <a-card v-show="tabActiveKey === 'api-debug'" :bordered="false" class="my-5">
         <ApiDebug v-if="isLoadFinish" :api-info="info" />
+      </a-card>
+
+      <a-card v-show="tabActiveKey === 'api-sdk'" :bordered="false" class="my-5">
+        <ApiSdk v-if="isLoadFinish" :sdk-list="info" />
       </a-card>
     </template>
   </page-container>
@@ -85,6 +89,7 @@ onMounted(async () => {
 :deep(.ant-btn) {
   border-radius: 0 !important;
 }
+
 :deep(.ant-card-body) {
   padding: 0;
 }
