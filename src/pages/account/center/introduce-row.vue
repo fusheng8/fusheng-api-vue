@@ -4,7 +4,7 @@ import ChartCard from '~/pages/account/center/components/chart-card.vue'
 import Field from '~/pages/account/center/components/field.vue'
 import { useUserStore } from '~/stores/user.ts'
 import ResetSecretKey from '~/pages/account/center/components/resetSecretKey.vue'
-import { payBalance } from '~/api/user.ts'
+import { addOrUpdateUser, payBalance } from '~/api/user.ts'
 
 defineProps({
   loading: {
@@ -29,6 +29,9 @@ const payBalanceModel = ref(false)
 const payBalanceData = ref({
   count: '',
 })
+
+const balanceNoticeOpen = ref(false)
+const balanceNoticeFormModel = ref({})
 function resetSK() {
   resetSecretKeyModel.value?.open()
 }
@@ -37,6 +40,18 @@ function resetSkSuccess(res) {
   userInfo.value.secretKey = res
   notification.success({
     message: '重置成功',
+    duration: 3,
+  })
+}
+function toUpdateBalanceNotice() {
+  addOrUpdateUser({
+    id: userInfo.value.id,
+    balanceLimitNotice: balanceNoticeFormModel.value.balanceNotice,
+  })
+  balanceNoticeOpen.value = false
+  balanceNoticeFormModel.value = ''
+  notification.success({
+    message: '设置成功',
     duration: 3,
   })
 }
@@ -81,7 +96,12 @@ function numberRep(value) {
           提现
         </a-button>
         <template #footer>
-          <Field label="剩余积分：" :value="userInfo.balance" />
+          <a-flex :vertical="value === 'vertical'" align="center">
+            <Field label="剩余积分：" :value="userInfo.balance" />
+            <a-button type="link" @click="balanceNoticeOpen = true">
+              设置积分不足提醒
+            </a-button>
+          </a-flex>
         </template>
       </ChartCard>
     </a-col>
@@ -103,11 +123,22 @@ function numberRep(value) {
     </a-col>
   </a-row>
   <ResetSecretKey ref="resetSecretKeyModel" @ok="resetSkSuccess" />
-  <a-modal v-model:open="payBalanceModel" title="Basic Modal" @ok="toPayBalance">
+  <a-modal v-model:open="payBalanceModel" title="充值积分" @ok="toPayBalance">
     <a-form :model="payBalanceData" class="w-full">
       <a-form-item name="count" label="充值积分数" :rules="[{ required: true, message: '请输入扣除积分数' }]">
         <a-input-number
           v-model:value="payBalanceData.count"
+          class="w-full" placeholder="请输入大于0的整数"
+          :formatter="numberRep" :parser="numberRep" :min="0"
+        />
+      </a-form-item>
+    </a-form>
+  </a-modal>
+  <a-modal v-model:open="balanceNoticeOpen" title="积分不足警告" @ok="toUpdateBalanceNotice">
+    <a-form :model="balanceNoticeFormModel" class="w-full">
+      <a-form-item name="balanceNotice" label="积分" :rules="[{ required: true, message: '请输入当积分低于多少发出通知' }]">
+        <a-input-number
+          v-model:value="balanceNoticeFormModel.balanceNotice"
           class="w-full" placeholder="请输入大于0的整数"
           :formatter="numberRep" :parser="numberRep" :min="0"
         />

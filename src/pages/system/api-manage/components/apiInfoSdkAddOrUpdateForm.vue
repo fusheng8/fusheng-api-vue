@@ -52,7 +52,8 @@ function onEdit(targetKey: any, action: any) {
 
 async function open(id: any) {
   editSdkModelVisable.value = true
-
+  panes.value = []
+  sdkInfo.value = {}
   // 获取api信息
   const res = await queryApiInfoById({ 'id': id })
   apiId.value = id
